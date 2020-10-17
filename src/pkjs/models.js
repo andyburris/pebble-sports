@@ -12,7 +12,7 @@ const possession = {
     NONE: 2
 }
 
-const gamedata = {
+const messagedata = {
     LIST_ITEM: 0,
     LAST_LIST_ITEM: 1,
     NO_GAMES: 2,
@@ -41,6 +41,7 @@ function FavoriteTeam(sport, team) {
 module.exports = {
     sports: sports,
     possession: possession,
+    messagedata: messagedata,
     Game: Game,
     FavoriteTeam: FavoriteTeam
 }

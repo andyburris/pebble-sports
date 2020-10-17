@@ -2,6 +2,10 @@
 #include "models.h"
 #include "comms.h"
 
+typedef enum {
+    DataListItem, DataLastListItem, DataNoGames, DataNetworkError
+} MessageData;
+
 // Largest expected inbox and outbox message sizes
 const uint32_t inbox_size = 256;
 const uint32_t outbox_size = 256;
@@ -140,14 +144,27 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
     }
 
     if(games_tuple) {
+
+        MessageData data = games_tuple->value->int8;
+
         APP_LOG(APP_LOG_LEVEL_DEBUG, "recieved games_tuple");
-        //uint8_t game_data = games_tuple->value->data;
         Tuple *sport_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME_SPORT);
         int sport = sport_tuple->value->int8;
         APP_LOG(APP_LOG_LEVEL_DEBUG, "sport_tuple = %d", sport);
 
-        if (sport != current_sport){ return; } // if phone is sending games from a sport the user stopped viewing, discard them 
-        
+        // if phone is sending games from a sport the user stopped viewing, discard them 
+        if (sport != current_sport){ return; }
+
+        // Handle edge cases. If there was an error connecting to the API or the API returns no games for a sport, use the corresponding callbacks
+        if (data == DataNoGames) {
+            on_games_error(NoGames);
+            return;
+        }
+        if (data == DataNetworkError) {
+            on_games_error(NetworkError);
+            return;
+        }
+    
 
         char *team_1 = memorize_dict_string(iter, MESSAGE_KEY_SEND_GAME_TEAM_1);
         char *team_2 = memorize_dict_string(iter, MESSAGE_KEY_SEND_GAME_TEAM_2);
@@ -189,15 +206,11 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
 
         Game game = games[games_count];
         APP_LOG(APP_LOG_LEVEL_DEBUG, "games[%d].team1 = %s", games_count, game.team1);
-        //APP_LOG(APP_LOG_LEVEL_DEBUG, "after game assign");
         games_count++;
 
-         if (games_tuple->value->int8 > 0) {
+        if (data == DataLastListItem) {
             APP_LOG(APP_LOG_LEVEL_DEBUG, "last game, running on_success");
-            APP_LOG(APP_LOG_LEVEL_DEBUG, "games[%i].sport = %i", games_count, games[0].sport);
-            //clear_games();
             on_games_success(current_sport, games_count, games);
-            APP_LOG(APP_LOG_LEVEL_DEBUG, "after on_success");
         }
     }
 

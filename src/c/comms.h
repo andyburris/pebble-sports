@@ -6,7 +6,7 @@
 
 //! Function signature for the callback on a successful request for games
 //! @param reason The reason for the error
-typedef void (*GamesErrorCallback)(AppMessageResult reason);
+typedef void (*GamesErrorCallback)(AppError error);
 
 
 //! Function signature for the callback on a successful request for games

@@ -2,6 +2,7 @@
 #include "pebble.h"
 #include "games-menu.h"
 #include "progress-layer.h"
+#include "error-layer.h"
 #include "header.h"
 #include "utils.h"
 #include "models.h"
@@ -19,6 +20,7 @@ static MenuLayer *s_menu_layer;
 static GBitmap *s_icon_image;
 static TextLayer *s_loading_text;
 static ProgressLayer *s_loading_progress;
+static ErrorLayer *s_error_layer;
 
 static int game_count;
 static Game *games;
@@ -114,9 +116,11 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 }
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context){
-    const Game game = games[cell_index->row];
-    printf("Opening %s - %s", game.team1, game.team2);
-    show_score_screen(game);
+    if(game_count > 0) {
+        const Game game = games[cell_index->row];
+        printf("Opening %s - %s", game.team1, game.team2);
+        show_score_screen(game);
+    }
 }
 
 static void on_games_loaded(Sport sport, int loaded_game_count, Game *loaded_games) {
@@ -130,8 +134,11 @@ static void on_games_loaded(Sport sport, int loaded_game_count, Game *loaded_gam
     layer_set_hidden(s_loading_progress, true); 
 }
 
-static void on_games_error(AppMessageResult reason) {
-    
+static void on_games_error(AppError error) {
+    layer_set_hidden(text_layer_get_layer(s_loading_text), true); 
+    layer_set_hidden(s_loading_progress, true); 
+    error_layer_set_error(s_error_layer, error);
+    layer_set_hidden(s_error_layer, false);
 }
 
 static void initialise_ui(Window *window, Sport sport)
@@ -198,6 +205,11 @@ static void initialise_ui(Window *window, Sport sport)
     text_layer_set_text_alignment(s_loading_text, GTextAlignmentCenter);
     text_layer_set_text(s_loading_text, "Loading games");
     layer_add_child(window_layer, text_layer_get_layer(s_loading_text));
+
+    GRect error_layer_bounds = GRect(bounds.origin.x + PBL_IF_ROUND_ELSE(32, 16), bounds.origin.y + bounds.size.h / 2 - 36, bounds.size.w - PBL_IF_ROUND_ELSE(64, 32), 61);
+    s_error_layer = error_layer_create(error_layer_bounds);
+    layer_set_hidden(s_error_layer, true);
+    layer_add_child(window_layer, s_error_layer);
 }
 
 static void destroy_ui(Window *window)
@@ -208,6 +220,7 @@ static void destroy_ui(Window *window)
     progress_layer_destroy(s_loading_progress);
     text_layer_destroy(s_loading_text);
     gbitmap_destroy(s_icon_image);
+    error_layer_destroy(s_error_layer);
 }
 
 static void handle_window_unload(Window *window){

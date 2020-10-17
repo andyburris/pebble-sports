@@ -1,6 +1,6 @@
 var models = require('./models');
 
-localStorage.setItem('favorites', JSON.stringify([new models.FavoriteTeam(models.sports.MLB, "WSH"), new models.FavoriteTeam(models.sports.NFL, "PIT")]));
+localStorage.setItem('favorites', JSON.stringify([]));
 var favorites = JSON.parse(localStorage.getItem('favorites'));
 
 module.exports = {

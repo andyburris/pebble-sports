@@ -2,6 +2,10 @@
 #define MODELS_H_
 
 typedef enum {
+    NetworkError, NoGames
+} AppError;
+
+typedef enum {
     Favorites, SportNFL, SportMLB, SportNHL, SportNBA
 } Sport;
 

@@ -81,6 +81,11 @@
                 },
                 {
                     "type": "png",
+                    "name": "ERROR_LARGE",
+                    "file": "images/Error Large.png"
+                },
+                {
+                    "type": "png",
                     "name": "FOOTBALL_LARGE",
                     "file": "images/Football Large.png"
                 },
