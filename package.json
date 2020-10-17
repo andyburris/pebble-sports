@@ -1,14 +1,15 @@
 {
     "name": "pebble-sports",
-    "author": "MakeAwesomeHappen",
-    "version": "1.0.0",
+    "author": "Catalyst Studios",
+    "version": "0.1.0",
     "keywords": [
-        "pebble-app"
+        "pebble-app",
+        "sports"
     ],
     "private": true,
     "dependencies": {},
     "pebble": {
-        "displayName": "pebble-sports",
+        "displayName": "Sports",
         "uuid": "f05a5171-08e2-4124-94da-81c8d4fe3084",
         "sdkVersion": "3",
         "enableMultiJS": true,
