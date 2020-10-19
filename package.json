@@ -26,6 +26,7 @@
             "READY",
             "REQUEST_ID",
             "LOAD_GAMES",
+            "ADD_FAVORITE",
             "SEND_GAME",
             "SEND_GAME_SPORT",
             "SEND_GAME_TEAM_1",
@@ -34,7 +35,8 @@
             "SEND_GAME_SCORE_2",
             "SEND_GAME_POSSESSION",
             "SEND_GAME_TIME",
-            "SEND_GAME_DETAILS"
+            "SEND_GAME_DETAILS",
+            "CONFIRM_FAVORITE"
         ],
         "resources": {
             "media": [

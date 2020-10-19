@@ -54,6 +54,11 @@ void error_layer_set_error(ErrorLayer *error_layer, AppError error) {
             data->title = "Network Error";
             data->summary = "Press select to refresh";
             break;
+        case ConnectionError:
+            data->icon = gbitmap_create_with_resource(RESOURCE_ID_ERROR_LARGE);
+            data->title = "Connection Error";
+            data->summary = "Press select to refresh";
+            break;
         
         default:
             break;
