@@ -8,7 +8,10 @@ require('./models');
 
 function getGames(sport, onLoad, onError) {
 
-    if (sport == sports.FAVORITES) { onLoad(sport, []); return;};
+    if (sport == sports.FAVORITES) { 
+        setTimeout(() => { onLoad(sport, []) }, 2000);
+        return;
+    };
 
     var req = new XMLHttpRequest();
     var endpoint = "http://site.api.espn.com/apis/site/v2/sports";

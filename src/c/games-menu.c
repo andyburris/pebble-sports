@@ -24,7 +24,40 @@ static ErrorLayer *s_error_layer;
 
 static int game_count;
 static Game *games;
-static char *games_small[];
+static Sport s_sport;
+static bool refreshing;
+
+static void on_games_loaded(Sport sport, int loaded_game_count, Game *loaded_games) {
+    APP_LOG(APP_LOG_LEVEL_WARNING, "games loaded callback");
+    game_count = loaded_game_count;
+    games = loaded_games;
+    if(s_menu_layer != NULL) {
+        menu_layer_reload_data(s_menu_layer);
+    }
+    layer_set_hidden(text_layer_get_layer(s_loading_text), true); 
+    progress_layer_set_hidden(s_loading_progress, true); 
+    refreshing = false;
+}
+
+static void on_games_error(AppError error) {
+    APP_LOG(APP_LOG_LEVEL_WARNING, "games error callback");
+    layer_set_hidden(text_layer_get_layer(s_loading_text), true); 
+    progress_layer_set_hidden(s_loading_progress, true); 
+    error_layer_set_error(s_error_layer, error);
+    layer_set_hidden(s_error_layer, false);
+    refreshing = false;
+}
+
+static void refresh_games(Sport sport) {
+    APP_LOG(APP_LOG_LEVEL_WARNING, "refreshing games = %s", refreshing ? "true" : "false");
+    refreshing = true;
+    game_count = 0;
+
+    request_games(sport, on_games_loaded, on_games_error);
+    layer_set_hidden(s_error_layer, true);
+    layer_set_hidden(text_layer_get_layer(s_loading_text), false); 
+    progress_layer_set_hidden(s_loading_progress, false); 
+}
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
     return game_count;
@@ -43,12 +76,9 @@ static int16_t menu_get_row_height_callback (MenuLayer *menu_layer, MenuIndex *c
             return 26;
         }
     #endif
-    
 } 
 
 static void menu_cell_game_large_draw(GContext* ctx, const Layer *cell_layer, bool selected, const Game game) {
-
-    
     GFont font_bold = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
     GFont font_regular = fonts_get_system_font(FONT_KEY_GOTHIC_14);
     GRect cell_bounds = layer_get_bounds(cell_layer);
@@ -116,36 +146,20 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 }
 
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context){
+    APP_LOG(APP_LOG_LEVEL_WARNING, "menu select, refreshing = %s", refreshing ? "true" : "false");
     if(game_count > 0) {
         const Game game = games[cell_index->row];
         printf("Opening %s - %s", game.team1, game.team2);
         show_score_screen(game);
+    } else if (!refreshing) {
+        refresh_games(s_sport);
     }
-}
-
-static void on_games_loaded(Sport sport, int loaded_game_count, Game *loaded_games) {
-    printf("games loaded callback");
-    game_count = loaded_game_count;
-    games = loaded_games;
-    if(s_menu_layer != NULL) {
-        menu_layer_reload_data(s_menu_layer);
-    }
-    layer_set_hidden(text_layer_get_layer(s_loading_text), true); 
-    layer_set_hidden(s_loading_progress, true); 
-}
-
-static void on_games_error(AppError error) {
-    layer_set_hidden(text_layer_get_layer(s_loading_text), true); 
-    layer_set_hidden(s_loading_progress, true); 
-    error_layer_set_error(s_error_layer, error);
-    layer_set_hidden(s_error_layer, false);
 }
 
 static void initialise_ui(Window *window, Sport sport)
 {
-
-    request_games(sport, on_games_loaded, on_games_error);
-
+    APP_LOG(APP_LOG_LEVEL_WARNING, "opening games-menu");
+    s_sport = sport;
     s_icon_image = gbitmap_create_with_resource(sport_get_icon_res_small(sport));
 
     Layer *window_layer = window_get_root_layer(window);
@@ -210,6 +224,8 @@ static void initialise_ui(Window *window, Sport sport)
     s_error_layer = error_layer_create(error_layer_bounds);
     layer_set_hidden(s_error_layer, true);
     layer_add_child(window_layer, s_error_layer);
+
+    refresh_games(sport);
 }
 
 static void destroy_ui(Window *window)

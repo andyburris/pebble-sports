@@ -11,3 +11,4 @@ static int16_t progress_layer_get_progress(ProgressLayer* progress_layer);
 void progress_layer_set_corner_radius(ProgressLayer* progress_layer, uint16_t corner_radius);
 void progress_layer_set_foreground_color(ProgressLayer* progress_layer, GColor color);
 void progress_layer_set_background_color(ProgressLayer* progress_layer, GColor color);
+void progress_layer_set_hidden(ProgressLayer* progress_layer, bool hidden);

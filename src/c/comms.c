@@ -93,6 +93,7 @@ void request_games(Sport sport, GamesSuccessCallback on_success, GamesErrorCallb
 }
 
 void clear_games() {
+    current_sport = -1;
     APP_LOG(APP_LOG_LEVEL_DEBUG, "clearing current games");
     for (int i = 0; i < games_count; i++)
     {
@@ -110,11 +111,10 @@ void clear_games() {
     } 
     
     //free(games);
-    // games = NULL;
+    games = NULL;
     on_games_success = NULL;
     on_games_error = NULL;
     games_count = 0;
-    current_sport = -1;
 }
 
 static char *memorize_dict_string(const DictionaryIterator *dict, uint32_t key) {
