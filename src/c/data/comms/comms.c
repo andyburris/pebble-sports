@@ -13,7 +13,7 @@ const uint32_t outbox_size = 256;
 static bool s_js_ready;
 
 static int games_count;
-static Sport current_sport = -1;
+static int current_request = -1;
 Game *games;
 static GamesSuccessCallback on_games_success;
 static GamesErrorCallback on_games_error;
@@ -57,21 +57,27 @@ static GamesErrorCallback on_games_error;
 void request_games(Sport sport, GamesSuccessCallback on_success, GamesErrorCallback on_error) {
 
     if(games != NULL) {
-        on_success(sport, games_count, games);
+        on_success(games_count, games);
     }
 
     //request_local(sport);
 
+    // generate a random id for the request so that if two requests happen at once, only the latest is loaded into memory
+    int request_id = rand();
+
     printf("getting games for %s", sport_get_name(sport));
-    //on_success(sport, games_count, games);
 
     DictionaryIterator *out_iter;
     AppMessageResult result = app_message_outbox_begin(&out_iter);
 
     if(result == APP_MSG_OK) { // Construct the message
-        // Add an item to ask for sport
-        Tuplet tuple = TupletInteger(MESSAGE_KEY_LOAD_GAMES, sport);
-        dict_write_tuplet(out_iter, &tuple);
+        // Add an item to ask for the sport
+        Tuplet load_games_tuple = TupletInteger(MESSAGE_KEY_LOAD_GAMES, sport);
+        dict_write_tuplet(out_iter, &load_games_tuple);
+
+        // Add an item with the request id
+        Tuplet request_id_tuple = TupletInteger(MESSAGE_KEY_REQUEST_ID, request_id);
+        dict_write_tuplet(out_iter, &request_id_tuple);
 
         // Send this message
         result = app_message_outbox_send();
@@ -80,7 +86,7 @@ void request_games(Sport sport, GamesSuccessCallback on_success, GamesErrorCallb
             APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
             on_error(result);
         } else {
-            current_sport = sport;
+            current_request = request_id;
             on_games_success = on_success;
             on_games_error = on_error;
         }
@@ -93,7 +99,7 @@ void request_games(Sport sport, GamesSuccessCallback on_success, GamesErrorCallb
 }
 
 void clear_games() {
-    current_sport = -1;
+    current_request = -1;
     APP_LOG(APP_LOG_LEVEL_DEBUG, "clearing current games");
     for (int i = 0; i < games_count; i++)
     {
@@ -145,17 +151,14 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
 
     if(games_tuple) {
 
+        Tuple *request_id_tuple = dict_find(iter, MESSAGE_KEY_REQUEST_ID);
+
+        // if phone is sending games from a request the user stopped viewing, discard them 
+        if (request_id_tuple->value->int32 != current_request){ return; }
+
         MessageData data = games_tuple->value->int8;
 
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "recieved games_tuple");
-        Tuple *sport_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME_SPORT);
-        int sport = sport_tuple->value->int8;
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "sport_tuple = %d", sport);
-
-        // if phone is sending games from a sport the user stopped viewing, discard them 
-        if (sport != current_sport){ return; }
-
-        // Handle edge cases. If there was an error connecting to the API or the API returns no games for a sport, use the corresponding callbacks
+        // Handle edge cases. If there was an error connecting to the API or the API returns no games for a sport, use the corresponding error callback
         if (data == DataNoGames) {
             on_games_error(NoGames);
             return;
@@ -164,6 +167,11 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
             on_games_error(NetworkError);
             return;
         }
+
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "recieved games_tuple");
+        Tuple *sport_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME_SPORT);
+        int sport = sport_tuple->value->int8;
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "sport_tuple = %d", sport);
     
 
         char *team_1 = memorize_dict_string(iter, MESSAGE_KEY_SEND_GAME_TEAM_1);
@@ -210,7 +218,7 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
 
         if (data == DataLastListItem) {
             APP_LOG(APP_LOG_LEVEL_DEBUG, "last game, running on_success");
-            on_games_success(current_sport, games_count, games);
+            on_games_success(games_count, games);
         }
     }
 

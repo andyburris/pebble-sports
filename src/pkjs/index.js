@@ -16,7 +16,11 @@ Pebble.addEventListener('appmessage', function(e) {
   
     console.log('Got message: ' + JSON.stringify(dict));
 
-    if (dict["LOAD_GAMES"]) {
+    // every appmessage from this watch app should come with an associated request id
+    if (!"REQUEST_ID" in dict) { console.error("No request id!"); return;}
+    const requestID = dict["REQUEST_ID"];
+
+    if ("LOAD_GAMES" in dict) {
         console.log("LOAD_GAMES", dict["LOAD_GAMES"]);
     } else {
         console.log("not load games?");
@@ -26,7 +30,15 @@ Pebble.addEventListener('appmessage', function(e) {
         case ("LOAD_GAMES" in dict):
             const sport = dict["LOAD_GAMES"];
             console.log("LOAD_GAMES, sport = ", sport);
-            api.getGames(sport, comms.sendGames, comms.sendError);
+            api.getGames(
+                sport, 
+                (games) => {
+                    comms.sendGames(requestID, games);
+                },
+                () => {
+                    comms.sendError(requestID);
+                }
+            );
             break;
     }
 });

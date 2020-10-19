@@ -2,19 +2,20 @@ const { messagedata } = require('./models');
 
 require('./models');
 
-function sendGames(sport, games) {
+function sendGames(requestID, games) {
     if (games.length == 0) {
-        sendEmpty(sport);
+        sendEmpty(requestID);
     } else {
-        sendGame(games, 0);
+        sendGame(requestID, games, 0);
     }
 }
 
-function sendGame(games, index) {
+function sendGame(requestID, games, index) {
     console.log("sending item ", index);
     const game = games[index]
     const lastItem = index == games.length - 1;
     const dict = {
+        'REQUEST_ID': requestID,
         'SEND_GAME': lastItem ? messagedata.LAST_LIST_ITEM : messagedata.LIST_ITEM,
         'SEND_GAME_SPORT': game.sport,
         'SEND_GAME_TEAM_1': game.team1,
@@ -32,7 +33,7 @@ function sendGame(games, index) {
 
         if (index < games.length) {
             // Send next item
-            sendGame(games, index);
+            sendGame(requestID, games, index);
         } else {
             console.log('Last item sent!');
         }
@@ -41,10 +42,10 @@ function sendGame(games, index) {
     });
 }
 
-function sendEmpty(sport) {
+function sendEmpty(requestID) {
     var dict = {
-        'SEND_GAME': messagedata.NO_GAMES,
-        'SEND_GAME_SPORT': sport,
+        'REQUEST_ID': requestID,
+        'SEND_GAME': messagedata.NO_GAMES
     }
     Pebble.sendAppMessage(dict, function () {
         console.log("message success");
@@ -53,10 +54,10 @@ function sendEmpty(sport) {
     });
 }
 
-function sendError(sport) {
+function sendError(requestID) {
     var dict = {
-        'SEND_GAME': messagedata.NETWORK_ERROR,
-        'SEND_GAME_SPORT': sport,
+        'REQUEST_ID': requestID,
+        'SEND_GAME': messagedata.NETWORK_ERROR
     }
     Pebble.sendAppMessage(dict, function () {
         console.log("message success");

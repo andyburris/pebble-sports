@@ -12,7 +12,7 @@ typedef void (*GamesErrorCallback)(AppError error);
 //! Function signature for the callback on a successful request for games
 //! @param sport The sport that was requested
 //! @param games The array of games returned for the sport
-typedef void (*GamesSuccessCallback)(Sport sport, int game_count, Game *games);
+typedef void (*GamesSuccessCallback)(int game_count, Game *games);
 
 #endif
 

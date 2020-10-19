@@ -27,7 +27,7 @@ static Game *games;
 static Sport s_sport;
 static bool refreshing;
 
-static void on_games_loaded(Sport sport, int loaded_game_count, Game *loaded_games) {
+static void on_games_loaded(int loaded_game_count, Game *loaded_games) {
     APP_LOG(APP_LOG_LEVEL_WARNING, "games loaded callback");
     game_count = loaded_game_count;
     games = loaded_games;

@@ -24,6 +24,7 @@
         },
         "messageKeys": [
             "READY",
+            "REQUEST_ID",
             "LOAD_GAMES",
             "SEND_GAME",
             "SEND_GAME_SPORT",

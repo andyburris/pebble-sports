@@ -30,17 +30,16 @@ function getGames(sport, onLoad, onError) {
                 const sportsData = JSON.parse(req.responseText);
                 const events = sportsData.events;
                 const games = events.map(event => parseEvent(sport, event));
-                console.log(JSON.stringify(games)); // let's log it to console to see what came from the API
-                onLoad(sport, games);
-            } else {
-                onError(sport)
+                console.log(JSON.stringify(games));
+                onLoad(games);
+                return;
             }
-        } else {
-            onError(sport)
         }
+        // doesn't run if onLoad is called due to the return statement
+        onError();
     }
     req.onerror = function (e) {
-        onError(sport)
+        onError()
     }
     req.send();
 }
@@ -79,7 +78,7 @@ function parseEvent(sport, event) {
 
 function gameDetails(sport, situation) {
     switch (sport) {
-        case sports.NFL: return situation.downDistanceText;
+        case sports.NFL: return situation.downDistanceText || "";
         case sports.MLB: return situation.balls + "-" + situation.strikes + ", " + situation.outs + " outs"; 
         default: return "";
     }
