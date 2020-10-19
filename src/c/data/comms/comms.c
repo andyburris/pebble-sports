@@ -1,5 +1,5 @@
 #include "pebble.h"
-#include "models.h"
+#include "../model/models.h"
 #include "comms.h"
 
 typedef enum {

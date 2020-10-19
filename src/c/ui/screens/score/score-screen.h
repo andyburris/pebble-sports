@@ -1,4 +1,4 @@
-#include "models.h"
+#include "../../../data/model/models.h"
 
 #ifndef SCORE_SCREEN_H_
 #define SCORE_SCREEN_H_

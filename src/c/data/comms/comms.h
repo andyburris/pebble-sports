@@ -1,5 +1,5 @@
 #include "pebble.h"
-#include "models.h"
+#include "../model/models.h"
 
 #ifndef COMMS_H_
 #define COMMS_H_

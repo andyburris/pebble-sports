@@ -1,3 +1,5 @@
+#include "../../../data/model/models.h"
+
 typedef struct {
     Game *game;
     char *team_1_label;

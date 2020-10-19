@@ -1,6 +1,6 @@
 #include "pebble.h"
-#include "league-menu.h"
-#include "comms.h"
+#include "ui/screens/leagues/league-menu.h"
+#include "data/comms/comms.h"
 
 static void init() {
     setup_comms();

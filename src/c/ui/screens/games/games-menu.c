@@ -1,13 +1,13 @@
 #include <stdbool.h>
 #include "pebble.h"
 #include "games-menu.h"
-#include "progress-layer.h"
-#include "error-layer.h"
-#include "header.h"
-#include "utils.h"
-#include "models.h"
-#include "score-screen.h"
-#include "comms.h"
+#include "../../layers/progress/progress-layer.h"
+#include "../../layers/error/error-layer.h"
+#include "../../layers/header/header.h"
+#include "../score/score-screen.h"
+#include "../../../data/model/models.h"
+#include "../../../data/comms/comms.h"
+#include "../../../utils/utils.h"
 
 #define NUM_MENU_SECTIONS 2
 #define NUM_FIRST_MENU_ITEMS 3

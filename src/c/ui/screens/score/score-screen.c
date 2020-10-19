@@ -1,9 +1,10 @@
 #include "pebble.h"
-#include "utils.h"
-#include "models.h"
-#include "header.h"
 #include "score-screen.h"
-#include "action-menu.h"
+#include "../../layers/header/header.h"
+#include "../action/action-menu.h"
+#include "../../../data/model/models.h"
+#include "../../../data/comms/comms.h"
+#include "../../../utils/utils.h"
 
 
 static Window *scoreWindow;

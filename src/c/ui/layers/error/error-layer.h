@@ -1,5 +1,5 @@
 #include "pebble.h"
-#include "models.h"
+#include "../../../data/model/models.h"
 
 typedef Layer ErrorLayer;
 

@@ -1,5 +1,5 @@
 #include "pebble.h"
-#include "./models.h"
+#include "../../../data/model/models.h"
 #include "action-menu.h"
 
 static ActionMenu *s_action_menu;

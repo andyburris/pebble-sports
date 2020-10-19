@@ -1,9 +1,9 @@
 #include "pebble.h"
 #include "league-menu.h"
-#include "games-menu.h"
-#include "utils.h"
-#include "models.h"
-#include "comms.h"
+#include "../games/games-menu.h"
+#include "../../../data/model/models.h"
+#include "../../../data/comms/comms.h"
+#include "../../../utils/utils.h"
 
 #define NUM_MENU_SECTIONS 1
 #define NUM_LEAGUES 5
