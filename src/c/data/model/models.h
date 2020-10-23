@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #ifndef MODELS_H_
 #define MODELS_H_
 
@@ -19,16 +21,17 @@ typedef enum {
 
 typedef struct Team {
     char *name;
+    char *score;
     int id;
+    bool favorite;
 } Team;
 
 typedef struct Game
 {
+    int id;
     Sport sport;
-    char* team1;
-    char* score1;
-    char* team2;
-    char* score2;
+    Team team1;
+    Team team2;
     Possession possession;
     char* time;
     char* details;

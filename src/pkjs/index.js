@@ -20,12 +20,6 @@ Pebble.addEventListener('appmessage', function(e) {
     if (!"REQUEST_ID" in dict) { console.error("No request id!"); return;}
     const requestID = dict["REQUEST_ID"];
 
-    if ("LOAD_GAMES" in dict) {
-        console.log("LOAD_GAMES", dict["LOAD_GAMES"]);
-    } else {
-        console.log("not load games?");
-    }
-
     switch(true) {
         case ("LOAD_GAMES" in dict):
             const sport = dict["LOAD_GAMES"];
@@ -36,9 +30,16 @@ Pebble.addEventListener('appmessage', function(e) {
                     comms.sendGames(requestID, games);
                 },
                 () => {
-                    comms.sendError(requestID);
+                    comms.sendGamesError(requestID);
                 }
             );
             break;
+
+        case ("ADD_FAVORITE_SPORT" in dict):
+            const favoriteSport = dict["ADD_FAVORITE_SPORT"];
+            const favoriteTeamID = dict["ADD_FAVORITE_TEAM_ID"];
+            const favoriteTeam = new models.FavoriteTeam(favoriteSport, favoriteTeamID.toString());
+            const added = storage.updateFavorite(favoriteTeam);
+            comms.sendFavoritesResult(requestID, added);
     }
 });

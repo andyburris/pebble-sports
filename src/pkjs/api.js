@@ -1,4 +1,5 @@
 const models = require('./models');
+const storage = require('./storage');
 const utils = require('./utils');
 const { sports, possession } = require('./models');
 
@@ -7,12 +8,46 @@ require('./models');
 // to get team schedule only, url is http://site.api.espn.com/apis/site/v2/sports/:sport/:league/teams/:id/schedule
 
 function getGames(sport, onLoad, onError) {
-
     if (sport == sports.FAVORITES) { 
-        setTimeout(() => { onLoad([]) }, 2000);
-        return;
-    };
+        getFavoriteGames(storage.favorites(), onLoad, onError);
+    } else {
+        getGamesForSport(sport, onLoad, onError)
+    }
 
+}
+
+function getFavoriteGames(favorites, onLoad, onError) {
+    console.log("getting favorite games");
+    const sportGroups = utils.groupBy(favorites, favoriteItem => favoriteItem.sport);
+    console.log("sportGroups = ", JSON.stringify(sportGroups));
+    const favoriteSports = Object.keys(sportGroups).map(key => parseInt(key));
+    console.log("favoriteSports = ", JSON.stringify(favoriteSports));
+    var favoriteGames = [];
+    var loadedSports = [];
+    Object.values(sportGroups).forEach((sportGroup) => {
+        const sport = sportGroup[0].sport
+        const teamIDs = sportGroup.map(favoriteItem => favoriteItem.teamID)
+        getGamesForSport(
+            sport,
+            (games) => {
+                console.log("loaded sport = ", sport, ", games = ", JSON.stringify(games));
+                console.log("teamIDs = ", JSON.stringify(teamIDs), "includes 23 = ", teamIDs.includes("23"));
+                const filtered = games.filter(game => teamIDs.includes(game.team1.id) || teamIDs.includes(game.team2.id) );
+                console.log("filtered = ", JSON.stringify(filtered));
+                favoriteGames.push(...filtered);
+                loadedSports.push(sport);
+                console.log("favoriteGames = ", JSON.stringify(favoriteGames), ", loadedSports = ", JSON.stringify(loadedSports), ", favoriteSports = ", JSON.stringify(favoriteSports));
+                if (favoriteSports.every(sport => loadedSports.includes(sport))) {
+                    console.log("loaded all sports");
+                    onLoad(favoriteGames);
+                }
+            },
+            onError // for now, an error in any of the requests should just send none of the games
+        )
+    })
+}
+
+function getGamesForSport(sport, onLoad, onError) {
     var req = new XMLHttpRequest();
     var endpoint = "http://site.api.espn.com/apis/site/v2/sports";
     switch (sport) {
@@ -55,6 +90,8 @@ function parseEvent(sport, event) {
         }
     })(event.status.type.name);
 
+    const id = event.id
+
     const team1 = competitors[1].team; //ESPN lists home first, we want to list away first so flip
     const team2 = competitors[0].team;
 
@@ -65,10 +102,11 @@ function parseEvent(sport, event) {
     const possession = event.status.type.name != "STATUS_IN_PROGRESS" ? models.possession.NONE : gamePossession(sport, event.competitions[0].situation, team1, team2);
 
     return new models.Game(
+        id,
         sport,
-        team1.abbreviation,
+        new models.Team(team1.abbreviation, team1.id),
         score1,
-        team2.abbreviation,
+        new models.Team(team2.abbreviation, team2.id),
         score2,
         possession,
         time,

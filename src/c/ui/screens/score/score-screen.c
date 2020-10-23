@@ -13,7 +13,7 @@ static Layer *s_header;
 static TextLayer *s_time;
 static Layer *s_score;
 static GBitmap *s_icon_image;
-static Game s_game;
+static Game *s_game;
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
     game_action_menu_open(s_game);
@@ -70,7 +70,7 @@ static void score_update_proc(Layer *layer, GContext *ctx) {
     
 }
 
-static Layer *score_layer_create(GRect bounds, const Game game) {
+static Layer *score_layer_create(GRect bounds, const Game *game) {
     Layer *score; 
     bounds.size.h = 60;
 
@@ -82,11 +82,11 @@ static Layer *score_layer_create(GRect bounds, const Game game) {
     score = layer_create_with_data(bounds, sizeof(ScoreData));
 
     ScoreData *layer_data = (ScoreData *)layer_get_data(score);
-    layer_data->team1 = game.team1;
-    layer_data->score1 = game.score1;
-    layer_data->team2 = game.team2;
-    layer_data->score2 = game.score2;
-    layer_data->possession = game.possession;
+    layer_data->team1 = game->team1.name;
+    layer_data->score1 = game->team1.score;
+    layer_data->team2 = game->team2.name;
+    layer_data->score2 = game->team2.score;
+    layer_data->possession = game->possession;
 
     layer_set_update_proc(score, score_update_proc);
 
@@ -98,7 +98,7 @@ static void initialise_ui(Window *window) {
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_frame(window_layer);
 
-    s_icon_image = gbitmap_create_with_resource(sport_get_icon_res_small(s_game.sport));
+    s_icon_image = gbitmap_create_with_resource(sport_get_icon_res_small(s_game->sport));
 
     s_status_bar = status_bar_layer_create();
     status_bar_layer_set_colors(s_status_bar, GColorElectricUltramarine, GColorWhite);
@@ -109,8 +109,8 @@ static void initialise_ui(Window *window) {
 
     s_header = create_header_layer(bounds, (HeaderData) {
         .icon = s_icon_image, 
-        .title = sport_get_name(s_game.sport),
-        .info = s_game.time,
+        .title = sport_get_name(s_game->sport),
+        .info = s_game->time,
     });
 
     layer_add_child(window_layer, s_header);
@@ -128,7 +128,7 @@ static void initialise_ui(Window *window) {
         s_time = text_layer_create(time_bounds);
         text_layer_set_font(s_time, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
         text_layer_set_text_alignment(s_time, GTextAlignmentCenter);
-        text_layer_set_text(s_time, s_game.time);
+        text_layer_set_text(s_time, s_game->time);
         Layer *time_layer =  text_layer_get_layer(s_time);
         layer_set_clips(time_layer, false);
         layer_add_child(window_layer, time_layer);
@@ -152,7 +152,7 @@ static void destroy_ui(Window *window) {
 static void handle_window_unload(Window *window) {
     destroy_ui(window);
 }
-void show_score_screen(const Game game)
+void show_score_screen(Game *game)
 {
     scoreWindow = window_create();
     s_game = game;

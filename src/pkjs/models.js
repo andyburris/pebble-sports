@@ -19,7 +19,13 @@ const messagedata = {
     NETWORK_ERROR: 3
 }
 
-function Game (sport, team1, score1, team2, score2, possession, time, details) {
+function Team(name, id) {
+    this.name = name,
+    this.id = id
+}
+
+function Game (id, sport, team1, score1, team2, score2, possession, time, details) {
+    this.id = id;
     this.sport = sport;
     this.team1 = team1;
     this.score1 = score1;
@@ -29,19 +35,20 @@ function Game (sport, team1, score1, team2, score2, possession, time, details) {
     this.time = time;
     this.details = details;
     this.isFavorite = function(favoriteTeam) {
-        return favoriteTeam.sport == sport && (favoriteTeam.team == team1 || favoriteTeam.team == team2);
+        return favoriteTeam.sport == sport && (favoriteTeam.teamID == team1.id || favoriteTeam.teamID == team2.id);
     }
 }
 
-function FavoriteTeam(sport, team) {
+function FavoriteTeam(sport, teamID) {
     this.sport = sport;
-    this.team = team;
+    this.teamID = teamID;
 }
 
 module.exports = {
     sports: sports,
     possession: possession,
     messagedata: messagedata,
+    Team: Team,
     Game: Game,
     FavoriteTeam: FavoriteTeam
 }

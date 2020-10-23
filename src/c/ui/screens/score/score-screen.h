@@ -13,5 +13,5 @@ typedef struct {
 
 #endif
 
-void show_score_screen (const Game game);
+void show_score_screen (Game *game);
 void hide_score_screen (void);

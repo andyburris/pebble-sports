@@ -42,7 +42,6 @@ static void progress_layer_update_proc(ProgressLayer* progress_layer, GContext* 
 }
 
 void update_anim_progress(void *subject, int16_t progress) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "updating animation - progress = %d", progress);
     ProgressLayer *progress_layer = (ProgressLayer*) subject;
     progress_layer_set_progress(progress_layer, progress);
 }

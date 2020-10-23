@@ -1,0 +1,1 @@
+Window *result_window_create_window(Game *game, MenuAction action, FavoriteChangeResult result);

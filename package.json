@@ -26,13 +26,19 @@
             "READY",
             "REQUEST_ID",
             "LOAD_GAMES",
-            "ADD_FAVORITE",
+            "ADD_FAVORITE_SPORT",
+            "ADD_FAVORITE_TEAM_ID",
             "SEND_GAME",
+            "SEND_GAME_ID",
             "SEND_GAME_SPORT",
-            "SEND_GAME_TEAM_1",
-            "SEND_GAME_TEAM_2",
-            "SEND_GAME_SCORE_1",
-            "SEND_GAME_SCORE_2",
+            "SEND_GAME_TEAM_1_NAME",
+            "SEND_GAME_TEAM_2_NAME",
+            "SEND_GAME_TEAM_1_ID",
+            "SEND_GAME_TEAM_2_ID",
+            "SEND_GAME_TEAM_1_FAVORITE",
+            "SEND_GAME_TEAM_2_FAVORITE",
+            "SEND_GAME_TEAM_1_SCORE",
+            "SEND_GAME_TEAM_2_SCORE",
             "SEND_GAME_POSSESSION",
             "SEND_GAME_TIME",
             "SEND_GAME_DETAILS",
@@ -112,6 +118,17 @@
                     "type": "png",
                     "name": "STAR_LARGE",
                     "file": "images/Star Large.png"
+                },
+
+                {
+                    "type": "raw",
+                    "name": "ANIM_CONFIRM",
+                    "file": "vector/confirm_sequence.pdc"
+                },
+                {
+                    "type": "raw",
+                    "name": "ANIM_DELETED",
+                    "file": "vector/deleted_sequence.pdc"
                 }
             ]
         }

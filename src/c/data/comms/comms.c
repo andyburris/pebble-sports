@@ -2,6 +2,7 @@
 #include "../model/models.h"
 #include "comms.h"
 #include "games/games-handler.h"
+#include "favorites/favorites-handler.h"
 
 
 
@@ -24,18 +25,25 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
     // A new message has been successfully received
     Tuple *ready_tuple = dict_find(iter, MESSAGE_KEY_READY);
 
-    // A list of games has been recieved
-    Tuple *games_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME);
-
     if(ready_tuple) {
         // PebbleKit JS is ready! Safe to send messages
         APP_LOG(APP_LOG_LEVEL_DEBUG, "JS Ready");
         s_js_ready = true;
     }
 
+
+    // A list of games has been recieved
+    Tuple *games_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME);
     if(games_tuple) {
         handle_games_recieved(iter);
     }
+
+    // A confirmation of setting a favorite has been recieved
+    Tuple *favorite_tuple = dict_find(iter, MESSAGE_KEY_CONFIRM_FAVORITE);
+    if(favorite_tuple) {
+        handle_favorite_change_result(iter);
+    }
+
 
 
 }
