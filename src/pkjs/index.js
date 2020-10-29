@@ -2,6 +2,10 @@ var models = require('./models');
 var storage = require('./storage');
 var comms = require('./comms');
 var api = require('./api');
+var Clay = require('pebble-clay');
+var clayConfig = require('./config');
+
+var clay = new Clay(clayConfig);
 
 Pebble.addEventListener("ready", function(e) {
         console.log("Hello world! - Sent from your javascript application.");

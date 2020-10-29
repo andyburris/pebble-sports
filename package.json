@@ -1,136 +1,140 @@
 {
-    "name": "pebble-sports",
-    "author": "Catalyst Studios",
-    "version": "0.1.0",
-    "keywords": [
-        "pebble-app",
-        "sports"
+  "name": "pebble-sports",
+  "author": "Catalyst Studios",
+  "version": "0.1.0",
+  "keywords": [
+    "pebble-app",
+    "sports"
+  ],
+  "private": true,
+  "dependencies": {
+    "pebble-clay": "^1.0.4"
+  },
+  "pebble": {
+    "displayName": "Sports",
+    "uuid": "f05a5171-08e2-4124-94da-81c8d4fe3084",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "capabilities": [
+        "configurable"
     ],
-    "private": true,
-    "dependencies": {},
-    "pebble": {
-        "displayName": "Sports",
-        "uuid": "f05a5171-08e2-4124-94da-81c8d4fe3084",
-        "sdkVersion": "3",
-        "enableMultiJS": true,
-        "targetPlatforms": [
-            "aplite",
-            "basalt",
-            "chalk",
-            "diorite"
-        ],
-        "watchapp": {
-            "watchface": false
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "chalk",
+      "diorite"
+    ],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+        "READY",
+        "REQUEST_ID",
+        "LOAD_GAMES",
+        "ADD_FAVORITE_SPORT",
+        "ADD_FAVORITE_TEAM_ID",
+        "SEND_GAME",
+        "SEND_GAME_ID",
+        "SEND_GAME_SPORT",
+        "SEND_GAME_TEAM_1_NAME",
+        "SEND_GAME_TEAM_2_NAME",
+        "SEND_GAME_TEAM_1_ID",
+        "SEND_GAME_TEAM_2_ID",
+        "SEND_GAME_TEAM_1_RECORD",
+        "SEND_GAME_TEAM_2_RECORD",
+        "SEND_GAME_TEAM_1_FAVORITE",
+        "SEND_GAME_TEAM_2_FAVORITE",
+        "SEND_GAME_TEAM_1_SCORE",
+        "SEND_GAME_TEAM_2_SCORE",
+        "SEND_GAME_POSSESSION",
+        "SEND_GAME_TIME",
+        "SEND_GAME_DETAILS",
+        "CONFIRM_FAVORITE"
+    ],
+    "resources": {
+      "media": [
+        {
+          "type": "png",
+          "name": "BASEBALL",
+          "file": "images/Baseball Small.png"
         },
-        "messageKeys": [
-            "READY",
-            "REQUEST_ID",
-            "LOAD_GAMES",
-            "ADD_FAVORITE_SPORT",
-            "ADD_FAVORITE_TEAM_ID",
-            "SEND_GAME",
-            "SEND_GAME_ID",
-            "SEND_GAME_SPORT",
-            "SEND_GAME_TEAM_1_NAME",
-            "SEND_GAME_TEAM_2_NAME",
-            "SEND_GAME_TEAM_1_ID",
-            "SEND_GAME_TEAM_2_ID",
-            "SEND_GAME_TEAM_1_FAVORITE",
-            "SEND_GAME_TEAM_2_FAVORITE",
-            "SEND_GAME_TEAM_1_SCORE",
-            "SEND_GAME_TEAM_2_SCORE",
-            "SEND_GAME_POSSESSION",
-            "SEND_GAME_TIME",
-            "SEND_GAME_DETAILS",
-            "CONFIRM_FAVORITE"
-        ],
-        "resources": {
-            "media": [
-                {
-                    "type": "png",
-                    "name": "BASEBALL",
-                    "file": "images/Baseball Small.png"
-                },
-                {
-                    "type": "png",
-                    "name": "BASKETBALL",
-                    "file": "images/Basketball Small.png"
-                },
-                {
-                    "type": "png",
-                    "name": "FOOTBALL",
-                    "file": "images/Football Small.png"
-                },
-                {
-                    "type": "png",
-                    "name": "HOCKEY",
-                    "file": "images/Hockey Small.png"
-                },
-                {
-                    "type": "png",
-                    "name": "SOCCER",
-                    "file": "images/Soccer Small.png"
-                },
-                {
-                    "type": "png",
-                    "name": "STAR",
-                    "file": "images/Star Small.png"
-                },
-
-
-                {
-                    "type": "png",
-                    "name": "BASEBALL_LARGE",
-                    "file": "images/Baseball Large.png"
-                },
-                {
-                    "type": "png",
-                    "name": "BASKETBALL_LARGE",
-                    "file": "images/Basketball Large.png"
-                },
-                {
-                    "type": "png",
-                    "name": "ERROR_LARGE",
-                    "file": "images/Error Large.png"
-                },
-                {
-                    "type": "png",
-                    "name": "FOOTBALL_LARGE",
-                    "file": "images/Football Large.png"
-                },
-                {
-                    "menuIcon": true,
-                    "type": "png",
-                    "name": "GENERIC_LARGE",
-                    "file": "images/Generic Large.png"
-                },
-                {
-                    "type": "png",
-                    "name": "HOCKEY_LARGE",
-                    "file": "images/Hockey Large.png"
-                },
-                {
-                    "type": "png",
-                    "name": "SOCCER_LARGE",
-                    "file": "images/Soccer Large.png"
-                },
-                {
-                    "type": "png",
-                    "name": "STAR_LARGE",
-                    "file": "images/Star Large.png"
-                },
-
-                {
-                    "type": "raw",
-                    "name": "ANIM_CONFIRM",
-                    "file": "vector/confirm_sequence.pdc"
-                },
-                {
-                    "type": "raw",
-                    "name": "ANIM_DELETED",
-                    "file": "vector/deleted_sequence.pdc"
-                }
-            ]
+        {
+          "type": "png",
+          "name": "BASKETBALL",
+          "file": "images/Basketball Small.png"
+        },
+        {
+          "type": "png",
+          "name": "FOOTBALL",
+          "file": "images/Football Small.png"
+        },
+        {
+          "type": "png",
+          "name": "HOCKEY",
+          "file": "images/Hockey Small.png"
+        },
+        {
+          "type": "png",
+          "name": "SOCCER",
+          "file": "images/Soccer Small.png"
+        },
+        {
+          "type": "png",
+          "name": "STAR",
+          "file": "images/Star Small.png"
+        },
+        {
+          "type": "png",
+          "name": "BASEBALL_LARGE",
+          "file": "images/Baseball Large.png"
+        },
+        {
+          "type": "png",
+          "name": "BASKETBALL_LARGE",
+          "file": "images/Basketball Large.png"
+        },
+        {
+          "type": "png",
+          "name": "ERROR_LARGE",
+          "file": "images/Error Large.png"
+        },
+        {
+          "type": "png",
+          "name": "FOOTBALL_LARGE",
+          "file": "images/Football Large.png"
+        },
+        {
+          "menuIcon": true,
+          "type": "png",
+          "name": "GENERIC_LARGE",
+          "file": "images/Generic Large.png"
+        },
+        {
+          "type": "png",
+          "name": "HOCKEY_LARGE",
+          "file": "images/Hockey Large.png"
+        },
+        {
+          "type": "png",
+          "name": "SOCCER_LARGE",
+          "file": "images/Soccer Large.png"
+        },
+        {
+          "type": "png",
+          "name": "STAR_LARGE",
+          "file": "images/Star Large.png"
+        },
+        {
+          "type": "raw",
+          "name": "ANIM_CONFIRM",
+          "file": "vector/confirm_sequence.pdc"
+        },
+        {
+          "type": "raw",
+          "name": "ANIM_DELETED",
+          "file": "vector/deleted_sequence.pdc"
         }
+      ]
     }
+  }
 }

@@ -92,21 +92,23 @@ function parseEvent(sport, event) {
 
     const id = event.id
 
-    const team1 = competitors[1].team; //ESPN lists home first, we want to list away first so flip
-    const team2 = competitors[0].team;
+    const competitor1 = competitors[1]; //ESPN lists home first, we want to list away first so flip
+    const competitor2 = competitors[0];
+    const team1 = competitor1.team;
+    const team2 = competitor2.team;
 
     //if the game hasn't started, the app shouldn't show the scores
-    const score1 = event.status.type.name == "STATUS_SCHEDULED" ? "" : competitors[1].score;
-    const score2 = event.status.type.name == "STATUS_SCHEDULED" ? "" : competitors[0].score;
+    const score1 = event.status.type.name == "STATUS_SCHEDULED" ? "" : competitor1.score;
+    const score2 = event.status.type.name == "STATUS_SCHEDULED" ? "" : competitor2.score;
 
     const possession = event.status.type.name != "STATUS_IN_PROGRESS" ? models.possession.NONE : gamePossession(sport, event.competitions[0].situation, team1, team2);
 
     return new models.Game(
         id,
         sport,
-        new models.Team(team1.abbreviation, team1.id),
+        new models.Team(team1.abbreviation, team1.id, competitor1.records[0].summary),
         score1,
-        new models.Team(team2.abbreviation, team2.id),
+        new models.Team(team2.abbreviation, team2.id, competitor2.records[0].summary),
         score2,
         possession,
         time,

@@ -1,0 +1,16 @@
+[
+    { 
+      "type": "heading", 
+      "defaultValue": "Sports Settings",
+      "size": 1
+    }, 
+    {
+        "type": "section",
+        "items": [
+          {
+            "type": "heading",
+            "defaultValue": "Leagues"
+          }
+        ]
+      }
+  ]

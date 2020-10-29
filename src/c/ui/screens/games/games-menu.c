@@ -178,8 +178,8 @@ static void initialise_ui(Window *window, Sport sport)
     });
     int header_height = PBL_IF_RECT_ELSE(layer_get_bounds(s_header).size.h, 8);
     
-    bounds.origin.y += header_height;
-    bounds.size.h -= header_height; 
+    bounds.origin.y += header_height + 4;
+    bounds.size.h -= header_height + 4; 
 
     s_menu_layer = menu_layer_create(bounds);
     menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks){

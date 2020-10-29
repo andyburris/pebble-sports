@@ -22,6 +22,7 @@ typedef enum {
 typedef struct Team {
     char *name;
     char *score;
+    char *record;
     int id;
     bool favorite;
 } Team;

@@ -92,8 +92,10 @@ void handle_request_games(Sport sport, GamesSuccessCallback on_success, GamesErr
 static void clear_game(Game *game) {
     free(game->team1.name);
     free(game->team1.score);
+    free(game->team1.record);
     free(game->team2.name);
     free(game->team2.score);
+    free(game->team2.record);
     free(game->time);
     free(game->summary);
     free(game->details);
@@ -160,6 +162,9 @@ void handle_games_recieved(DictionaryIterator *iter) {
 
     char *team_1_score = memorize_dict_string(iter, MESSAGE_KEY_SEND_GAME_TEAM_1_SCORE);
     char *team_2_score = memorize_dict_string(iter, MESSAGE_KEY_SEND_GAME_TEAM_2_SCORE);
+    
+    char *team_1_record = memorize_dict_string(iter, MESSAGE_KEY_SEND_GAME_TEAM_1_RECORD);
+    char *team_2_record = memorize_dict_string(iter, MESSAGE_KEY_SEND_GAME_TEAM_2_RECORD);
 
     bool team_1_favorite = dict_find(iter, MESSAGE_KEY_SEND_GAME_TEAM_1_FAVORITE)->value->int8;
     bool team_2_favorite = dict_find(iter, MESSAGE_KEY_SEND_GAME_TEAM_2_FAVORITE)->value->int8;
@@ -192,13 +197,15 @@ void handle_games_recieved(DictionaryIterator *iter) {
         .name = team_1_name,
         .score = team_1_score,
         .id = team_1_id,
-        .favorite = team_1_favorite
+        .favorite = team_1_favorite,
+        .record = team_1_record,
     };
     game->team2 = (Team) {
         .name = team_2_name,
         .score = team_2_score,
         .id = team_2_id,
-        .favorite = team_2_favorite
+        .favorite = team_2_favorite,
+        .record = team_2_record,
     };
     game->possession = possession;
     game->time = time;
@@ -208,7 +215,7 @@ void handle_games_recieved(DictionaryIterator *iter) {
 
     APP_LOG(APP_LOG_LEVEL_DEBUG, "after game creation");
 
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "games[%d].team1.name = %s", games_count, game->team1.name);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "games[%d]->team1.name = %s", games_count, game->team1.name);
     games_count++;
 
     if (data == DataLastListItem) {

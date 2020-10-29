@@ -34,6 +34,8 @@ function sendGame(requestID, games, index) {
         'SEND_GAME_TEAM_2_ID': parseInt(game.team2.id),
         'SEND_GAME_TEAM_1_SCORE': game.score1,
         'SEND_GAME_TEAM_2_SCORE': game.score2,
+        'SEND_GAME_TEAM_1_RECORD': game.team1.record,
+        'SEND_GAME_TEAM_2_RECORD': game.team2.record,
         'SEND_GAME_TEAM_1_FAVORITE': team1Favorite,
         'SEND_GAME_TEAM_2_FAVORITE': team2Favorite,
         'SEND_GAME_POSSESSION': game.possession,

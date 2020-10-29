@@ -19,9 +19,10 @@ const messagedata = {
     NETWORK_ERROR: 3
 }
 
-function Team(name, id) {
-    this.name = name,
-    this.id = id
+function Team(name, id, record) {
+    this.name = name;
+    this.id = id;
+    this.record = record;
 }
 
 function Game (id, sport, team1, score1, team2, score2, possession, time, details) {
