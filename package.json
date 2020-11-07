@@ -16,7 +16,7 @@
     "sdkVersion": "3",
     "enableMultiJS": true,
     "capabilities": [
-        "configurable"
+      "configurable"
     ],
     "targetPlatforms": [
       "aplite",
@@ -28,28 +28,28 @@
       "watchface": false
     },
     "messageKeys": [
-        "READY",
-        "REQUEST_ID",
-        "LOAD_GAMES",
-        "ADD_FAVORITE_SPORT",
-        "ADD_FAVORITE_TEAM_ID",
-        "SEND_GAME",
-        "SEND_GAME_ID",
-        "SEND_GAME_SPORT",
-        "SEND_GAME_TEAM_1_NAME",
-        "SEND_GAME_TEAM_2_NAME",
-        "SEND_GAME_TEAM_1_ID",
-        "SEND_GAME_TEAM_2_ID",
-        "SEND_GAME_TEAM_1_RECORD",
-        "SEND_GAME_TEAM_2_RECORD",
-        "SEND_GAME_TEAM_1_FAVORITE",
-        "SEND_GAME_TEAM_2_FAVORITE",
-        "SEND_GAME_TEAM_1_SCORE",
-        "SEND_GAME_TEAM_2_SCORE",
-        "SEND_GAME_POSSESSION",
-        "SEND_GAME_TIME",
-        "SEND_GAME_DETAILS",
-        "CONFIRM_FAVORITE"
+      "READY",
+      "REQUEST_ID",
+      "LOAD_GAMES",
+      "ADD_FAVORITE_SPORT",
+      "ADD_FAVORITE_TEAM_ID",
+      "SEND_GAME",
+      "SEND_GAME_ID",
+      "SEND_GAME_SPORT",
+      "SEND_GAME_TEAM_1_NAME",
+      "SEND_GAME_TEAM_2_NAME",
+      "SEND_GAME_TEAM_1_ID",
+      "SEND_GAME_TEAM_2_ID",
+      "SEND_GAME_TEAM_1_RECORD",
+      "SEND_GAME_TEAM_2_RECORD",
+      "SEND_GAME_TEAM_1_FAVORITE",
+      "SEND_GAME_TEAM_2_FAVORITE",
+      "SEND_GAME_TEAM_1_SCORE",
+      "SEND_GAME_TEAM_2_SCORE",
+      "SEND_GAME_POSSESSION",
+      "SEND_GAME_TIME",
+      "SEND_GAME_DETAILS",
+      "CONFIRM_FAVORITE"
     ],
     "resources": {
       "media": [

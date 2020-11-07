@@ -165,7 +165,7 @@ static void initialise_ui(Window *window, Sport sport)
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_frame(window_layer);
     s_status_bar = status_bar_layer_create();
-    status_bar_layer_set_colors(s_status_bar, GColorElectricUltramarine, GColorWhite);
+    status_bar_layer_set_colors(s_status_bar, GColorOxfordBlue, GColorWhite);
     layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
     bounds.origin.y += STATUS_BAR_LAYER_HEIGHT;
@@ -189,7 +189,7 @@ static void initialise_ui(Window *window, Sport sport)
         .select_click = menu_select_callback,
     });
 
-    menu_layer_set_highlight_colors(s_menu_layer, GColorElectricUltramarine, GColorWhite);
+    menu_layer_set_highlight_colors(s_menu_layer, GColorOxfordBlue, GColorWhite);
     menu_layer_set_click_config_onto_window(s_menu_layer, window);
 
     layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
@@ -206,8 +206,8 @@ static void initialise_ui(Window *window, Sport sport)
     GRect loading_bar_bounds = loading_section_bounds;
     loading_bar_bounds.size.h = 4;
     s_loading_progress = progress_layer_create(loading_bar_bounds);
-    progress_layer_set_background_color(s_loading_progress, GColorBabyBlueEyes);
-    progress_layer_set_foreground_color(s_loading_progress, GColorElectricUltramarine);
+    progress_layer_set_background_color(s_loading_progress, GColorVeryLightBlue);
+    progress_layer_set_foreground_color(s_loading_progress, GColorOxfordBlue);
     progress_layer_set_corner_radius(s_loading_progress, 2);
     layer_add_child(window_layer, s_loading_progress);
 

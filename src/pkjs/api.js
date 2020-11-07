@@ -6,6 +6,7 @@ const { sports, possession } = require('./models');
 require('./models');
 
 // to get team schedule only, url is http://site.api.espn.com/apis/site/v2/sports/:sport/:league/teams/:id/schedule
+// to get more info on specific game, url is http://site.api.espn.com/apis/site/v2/sports/:sport/:league/summary?event=:id
 
 function getGames(sport, onLoad, onError) {
     if (sport == sports.FAVORITES) { 

@@ -6,7 +6,7 @@ static void rect_header_update_proc(Layer *layer, GContext *ctx) {
 
     HeaderData *data = (HeaderData *)layer_get_data(layer);
 
-    graphics_context_set_fill_color(ctx, GColorElectricUltramarine);
+    graphics_context_set_fill_color(ctx, GColorOxfordBlue);
     GRect layer_bounds = layer_get_bounds(layer);
     graphics_fill_rect(ctx, layer_bounds, 0, GCornerNone);
 
@@ -32,7 +32,7 @@ static void circle_header_update_proc(Layer *layer, GContext *ctx) {
 
     HeaderData *data = (HeaderData *)layer_get_data(layer);
 
-    graphics_context_set_fill_color(ctx, GColorElectricUltramarine);
+    graphics_context_set_fill_color(ctx, GColorOxfordBlue);
     GRect layer_bounds = layer_get_bounds(layer);
     int radius = layer_bounds.size.w;
     int horz_center = layer_bounds.origin.x + (layer_bounds.size.w/2);

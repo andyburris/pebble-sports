@@ -85,7 +85,7 @@ static void result_layer_update_proc(Layer *layer, GContext *ctx) {
 Window *result_window_create_window(Game *game, MenuAction action, FavoriteChangeResult result) {
     Window *result_window = window_create();
     
-    window_set_background_color(result_window, GColorElectricUltramarine);
+    window_set_background_color(result_window, GColorOxfordBlue);
 
     Layer *root_layer = window_get_root_layer(result_window);
 

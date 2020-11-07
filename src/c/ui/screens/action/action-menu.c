@@ -100,7 +100,7 @@ void game_action_menu_open(Game *game) {
     config = (ActionMenuConfig) {
         .root_level = s_level,
         .colors = {
-            .background = GColorElectricUltramarine,
+            .background = GColorOxfordBlue,
             .foreground = GColorWhite
         },
         .context = &s_labels,

@@ -24,30 +24,30 @@ static void score_update_proc(Layer *layer, GContext *ctx) {
     graphics_draw_text(ctx, game->team2.record, font_record, record_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
 
     //score 1 is centered between the left edge and the divider
-    GRect score_1_bounds = GRect(0, has_long_score ? 14 : 14 - 5, separator_bounds.origin.x, 42);
+    GRect score_1_bounds = GRect(0, has_long_score ? 11 : 7, separator_bounds.origin.x, 42);
     graphics_draw_text(ctx, game->team1.score, font_score, score_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     //score 2 is centered between the divider and the right edge
-    GRect score_2_bounds = GRect(separator_bounds.origin.x + separator_bounds.size.w, has_long_score ? 14 : 14 - 5, separator_bounds.origin.x, 42);
+    GRect score_2_bounds = GRect(separator_bounds.origin.x + separator_bounds.size.w, has_long_score ? 11 : 7, separator_bounds.origin.x, 42);
     graphics_draw_text(ctx, game->team2.score, font_score, score_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
 
-    //if a possession indicator is showing, 14px more of content needs to be centered (8px padding + 6px indicator)
+    //if a possession indicator is showing, 10px more of content needs to be centered (6px padding + 4px indicator)
     //so offset text by half of that
-    int possession_offset = 7;
+    int possession_offset = 5;
 
     bool team_1_possession = (game->possession) == Team1;
     GSize team_1_size = graphics_text_layout_get_content_size(game->team1.name, font_team, score_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter);
-    GRect team_1_bounds = GRect(score_1_bounds.size.w/2 - team_1_size.w/2 - (team_1_possession ? possession_offset : 0), 54, team_1_size.w, 26);
+    GRect team_1_bounds = GRect(score_1_bounds.size.w/2 - team_1_size.w/2 - (team_1_possession ? possession_offset : 0), 50, team_1_size.w, 26);
     graphics_draw_text(ctx, game->team1.name, font_team, team_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     if (team_1_possession) {
-        graphics_fill_circle(ctx, GPoint(team_1_bounds.origin.x + team_1_bounds.size.w + 8 + 3, team_1_bounds.origin.y + team_1_bounds.size.h /2), 3);
+        graphics_fill_circle(ctx, GPoint(team_1_bounds.origin.x + team_1_bounds.size.w + 6 - 2, team_1_bounds.origin.y + team_1_bounds.size.h /2), 2);
     }
 
     bool team_2_possession = (game->possession) == Team2;
     GSize team_2_size = graphics_text_layout_get_content_size(game->team2.name, font_team, score_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter);
-    GRect team_2_bounds = GRect(score_2_bounds.origin.x + score_2_bounds.size.w/2 - team_2_size.w/2 - (team_2_possession ? possession_offset : 0), 54, team_2_size.w, 26);
+    GRect team_2_bounds = GRect(score_2_bounds.origin.x + score_2_bounds.size.w/2 - team_2_size.w/2 - (team_2_possession ? possession_offset : 0), 50, team_2_size.w, 26);
     graphics_draw_text(ctx, game->team2.name, font_team, team_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     if (team_2_possession) {
-        graphics_fill_circle(ctx, GPoint(team_2_bounds.origin.x + team_2_bounds.size.w + 8 + 3, team_2_bounds.origin.y + team_2_bounds.size.h /2), 3);
+        graphics_fill_circle(ctx, GPoint(team_2_bounds.origin.x + team_2_bounds.size.w + 6 - 2, team_2_bounds.origin.y + team_2_bounds.size.h /2), 2);
     }
     
 }

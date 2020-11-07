@@ -37,7 +37,7 @@ static void initialise_ui(Window *window) {
     s_icon_image = gbitmap_create_with_resource(sport_get_icon_res_small(s_game->sport));
 
     s_status_bar = status_bar_layer_create();
-    status_bar_layer_set_colors(s_status_bar, GColorElectricUltramarine, GColorWhite);
+    status_bar_layer_set_colors(s_status_bar, GColorOxfordBlue, GColorWhite);
     layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
     bounds.origin.y += STATUS_BAR_LAYER_HEIGHT;
