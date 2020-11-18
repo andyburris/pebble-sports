@@ -3,6 +3,7 @@
 #include "../games/games-menu.h"
 #include "../../../data/model/models.h"
 #include "../../../data/comms/comms.h"
+#include "../../../data/comms/games/games-handler.h"
 #include "../../../utils/utils.h"
 
 #define NUM_MENU_SECTIONS 1
@@ -66,7 +67,7 @@ static void destroy_ui(Window *window) {
 }
 
 static void handle_window_appear(Window *window) {
-    clear_games();
+    handle_clear_games();
 }
 
 static void handle_window_unload(Window *window) {

@@ -7,6 +7,7 @@
 #include "../score/score-screen.h"
 #include "../../../data/model/models.h"
 #include "../../../data/comms/comms.h"
+#include "../../../data/comms/games/games-handler.h"
 #include "../../../utils/utils.h"
 
 #define NUM_MENU_SECTIONS 2
@@ -53,7 +54,7 @@ static void refresh_games(Sport sport) {
     refreshing = true;
     game_count = 0;
 
-    request_games(sport, on_games_loaded, on_games_error);
+    handle_request_games(sport, on_games_loaded, on_games_error);
     layer_set_hidden(s_error_layer, true);
     layer_set_hidden(text_layer_get_layer(s_loading_text), false); 
     progress_layer_set_hidden(s_loading_progress, false); 

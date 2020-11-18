@@ -45,17 +45,17 @@ void error_layer_set_error(ErrorLayer *error_layer, AppError error) {
     switch (error)
     {
         case NoGames:
-            data->icon = gbitmap_create_with_resource(RESOURCE_ID_GENERIC_LARGE);
+            data->icon = gbitmap_create_with_resource(RESOURCE_ID_GENERIC_25);
             data->title = "No Games";
             data->summary = "Press select to refresh";
             break;
         case NetworkError:
-            data->icon = gbitmap_create_with_resource(RESOURCE_ID_ERROR_LARGE);
+            data->icon = gbitmap_create_with_resource(RESOURCE_ID_ERROR_25);
             data->title = "Network Error";
             data->summary = "Press select to refresh";
             break;
         case ConnectionError:
-            data->icon = gbitmap_create_with_resource(RESOURCE_ID_ERROR_LARGE);
+            data->icon = gbitmap_create_with_resource(RESOURCE_ID_ERROR_25);
             data->title = "Connection Error";
             data->summary = "Press select to refresh";
             break;

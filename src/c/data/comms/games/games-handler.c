@@ -1,13 +1,16 @@
 #include "pebble.h"
 #include "../comms.h"
+#include "games-handler.h"
 #include "../../model/models.h"
 
 static int current_request = -1;
 static int games_count;
 static Game **games;
 
-static GamesSuccessCallback on_games_success;
-static GamesErrorCallback on_games_error;
+static GameListSuccessCallback on_games_success;
+static GameListErrorCallback on_games_error;
+
+static GameUpdateCallback on_game_update;
 
 /* static void request_local(Sport sport) {
     switch (sport) {
@@ -45,7 +48,7 @@ static GamesErrorCallback on_games_error;
     }
 } */
 
-void handle_request_games(Sport sport, GamesSuccessCallback on_success, GamesErrorCallback on_error) {
+void handle_request_games(Sport sport, GameListSuccessCallback on_success, GameListErrorCallback on_error) {
 
     if(games != NULL) {
         on_success(games_count, games);
@@ -63,8 +66,8 @@ void handle_request_games(Sport sport, GamesSuccessCallback on_success, GamesErr
 
     if(result == APP_MSG_OK) { // Construct the message
         // Add an item to ask for the sport
-        Tuplet load_games_tuple = TupletInteger(MESSAGE_KEY_LOAD_GAMES, sport);
-        dict_write_tuplet(out_iter, &load_games_tuple);
+        Tuplet update_game_tuple = TupletInteger(MESSAGE_KEY_LOAD_GAMES, sport);
+        dict_write_tuplet(out_iter, &update_game_tuple);
 
         // Add an item with the request id
         Tuplet request_id_tuple = TupletInteger(MESSAGE_KEY_REQUEST_ID, request_id);
@@ -86,6 +89,44 @@ void handle_request_games(Sport sport, GamesSuccessCallback on_success, GamesErr
         // The outbox cannot be used right now
         APP_LOG(APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
         on_error(ConnectionError);
+    }
+}
+
+void update_game(Game *game, GameUpdateCallback on_update) {
+    // generate a random id for the request so that if two requests happen at once, only the latest is loaded into memory
+    int request_id = rand();
+
+    DictionaryIterator *out_iter;
+    AppMessageResult result = app_message_outbox_begin(&out_iter);
+
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating game %s - %s, id = %d", game->team1.name, game->team2.name, game->id);
+
+    if(result == APP_MSG_OK) { // Construct the message
+        // Add an item to ask for the sport
+        Tuplet update_game_id_tuple = TupletInteger(MESSAGE_KEY_UPDATE_GAME_ID, game->id);
+        Tuplet update_game_sport_tuple = TupletInteger(MESSAGE_KEY_UPDATE_GAME_SPORT, game->sport);
+        dict_write_tuplet(out_iter, &update_game_id_tuple);
+        dict_write_tuplet(out_iter, &update_game_sport_tuple);
+
+        // Add an item with the request id
+        Tuplet request_id_tuple = TupletInteger(MESSAGE_KEY_REQUEST_ID, request_id);
+        dict_write_tuplet(out_iter, &request_id_tuple);
+
+        // Send this message
+        result = app_message_outbox_send();
+
+        if(result != APP_MSG_OK) {
+            APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
+            on_update(GameUpdateNetworkError);
+        } else {
+            current_request = request_id;
+            on_game_update = on_update;
+        }
+        
+    } else {
+        // The outbox cannot be used right now
+        APP_LOG(APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
+        on_update(GameUpdateNetworkError);
     }
 }
 
@@ -129,25 +170,9 @@ static char *memorize_dict_string(const DictionaryIterator *dict, uint32_t key) 
     return str;
 }
 
-void handle_games_recieved(DictionaryIterator *iter) {
-    int request_id = dict_find(iter, MESSAGE_KEY_REQUEST_ID)->value->int32;
-
-    // if phone is sending games from a request the user stopped viewing, discard them 
-    if (request_id != current_request){ return; }
-
-    MessageData data = dict_find(iter, MESSAGE_KEY_SEND_GAME)->value->int8;
-
-    // Handle edge cases. If there was an error connecting to the API or the API returns no games for a sport, use the corresponding error callback
-    if (data == DataNoGames) {
-        on_games_error(NoGames);
-        return;
-    }
-    if (data == DataNetworkError) {
-        on_games_error(NetworkError);
-        return;
-    }
-
-    int game_id = dict_find(iter, MESSAGE_KEY_SEND_GAME_ID)->value->int8;
+// From an AppMessage DictionaryIterator, set values in an already malloc-ed Game pointer
+void game_set(Game *game, DictionaryIterator *iter) {
+    int game_id = dict_find(iter, MESSAGE_KEY_SEND_GAME_ID)->value->int32;
 
     APP_LOG(APP_LOG_LEVEL_DEBUG, "recieved games_tuple");
     int sport = dict_find(iter, MESSAGE_KEY_SEND_GAME_SPORT)->value->int8;
@@ -184,13 +209,6 @@ void handle_games_recieved(DictionaryIterator *iter) {
     strcat(summary, " ");
     strcat(summary, team_2_name);
 
-    games = realloc(games, (games_count + 1) * sizeof(Game));
-    //games[games_count] = malloc(sizeof(Game));
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "after game malloc");
-
-    games[games_count] = malloc(sizeof(Game));
-    Game *game = games[games_count];
-
     game->id = game_id;
     game->sport = sport;
     game->team1 = (Team) {
@@ -211,15 +229,62 @@ void handle_games_recieved(DictionaryIterator *iter) {
     game->time = time;
     game->details = details;
     game->summary = summary;
+}
 
+void handle_games_recieved(DictionaryIterator *iter) {
+    int request_id = dict_find(iter, MESSAGE_KEY_REQUEST_ID)->value->int32;
+
+    // if phone is sending games from a request the user stopped viewing, discard them 
+    if (request_id != current_request){ return; }
+
+    GamesListState data = dict_find(iter, MESSAGE_KEY_SEND_GAME_LIST)->value->int8;
+
+    // Handle edge cases. If there was an error connecting to the API or the API returns no games for a sport, use the corresponding error callback
+    if (data == GamesListNoGames) {
+        on_games_error(NoGames);
+        return;
+    }
+    if (data == GamesListNetworkError) {
+        on_games_error(NetworkError);
+        return;
+    }
+
+    games = realloc(games, (games_count + 1) * sizeof(Game));
+    games[games_count] = malloc(sizeof(Game));
+
+    game_set(games[games_count], iter);
 
     APP_LOG(APP_LOG_LEVEL_DEBUG, "after game creation");
-
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "games[%d]->team1.name = %s", games_count, game->team1.name);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "games[%d]->team1.name = %s", games_count, games[games_count]->team1.name);
     games_count++;
 
-    if (data == DataLastListItem) {
+    if (data == GamesListLastItem) {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "last game, running on_success");
         on_games_success(games_count, games);
+    }
+}
+
+void handle_game_update_recieved(DictionaryIterator *iter) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "handling game update");
+
+    GameUpdateResult data = dict_find(iter, MESSAGE_KEY_SEND_GAME_UPDATE)->value->int8;
+
+    if (data == GameUpdateNetworkError) {
+        on_game_update(GameUpdateNetworkError);
+        return;
+    }
+
+    int game_id = dict_find(iter, MESSAGE_KEY_SEND_GAME_ID)->value->int32;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "handling game update, id = %d", game_id);
+
+
+    for (int i = 0; i < games_count; i++) {
+        if (games[i]->id == game_id) {
+            clear_game(games[i]);
+            games[i] = malloc(sizeof(Game));
+            game_set(games[i], iter);
+            APP_LOG(APP_LOG_LEVEL_DEBUG, "handling game update, calling callback");
+            on_game_update(GameUpdated);
+        }
     }
 }

@@ -7,10 +7,12 @@
 #include "../../../data/model/models.h"
 #include "../../../data/comms/comms.h"
 #include "../../../utils/utils.h"
+#include "../action/action-indicator-layer.h"
 
 
 static Window *scoreWindow;
 static StatusBarLayer *s_status_bar;
+static Layer *s_action_indicator;
 static Layer *s_header;
 static TextLayer *s_time;
 static TextLayer *s_details;
@@ -35,7 +37,6 @@ static void initialise_ui(Window *window) {
     GRect bounds = layer_get_frame(window_layer);
 
     s_icon_image = gbitmap_create_with_resource(sport_get_icon_res_small(s_game->sport));
-
     s_status_bar = status_bar_layer_create();
     status_bar_layer_set_colors(s_status_bar, GColorOxfordBlue, GColorWhite);
     layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
@@ -87,12 +88,14 @@ static void initialise_ui(Window *window) {
     layer_set_clips(time_layer, false);
     layer_add_child(window_layer, time_layer);
 
-
+    s_action_indicator = action_indicator_layer_create();
+    layer_add_child(window_layer, s_action_indicator);
 
 }
 
 static void destroy_ui(Window *window) {
     status_bar_layer_destroy(s_status_bar);
+    layer_destroy(s_action_indicator);
     layer_destroy(s_header);
     text_layer_destroy(s_time);
     layer_destroy(s_score);

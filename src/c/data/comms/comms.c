@@ -12,14 +12,6 @@ const uint32_t outbox_size = 256;
 
 static bool s_js_ready;
 
-void request_games(Sport sport, GamesSuccessCallback on_success, GamesErrorCallback on_error) {
-    handle_request_games(sport, on_success, on_error);
-}
-
-void clear_games() {
-    handle_clear_games();
-}
-
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "recieved js message");
     // A new message has been successfully received
@@ -33,9 +25,15 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
 
 
     // A list of games has been recieved
-    Tuple *games_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME);
-    if(games_tuple) {
+    Tuple *game_list_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME_LIST);
+    if(game_list_tuple) {
         handle_games_recieved(iter);
+    }
+
+    // A game update has been recieved
+    Tuple *game_update_tuple = dict_find(iter, MESSAGE_KEY_SEND_GAME_UPDATE);
+    if(game_update_tuple) {
+        handle_game_update_recieved(iter);
     }
 
     // A confirmation of setting a favorite has been recieved

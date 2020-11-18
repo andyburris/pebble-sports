@@ -4,19 +4,19 @@
 int sport_get_icon_res_small(Sport sport) {
     switch (sport){
         case SportNFL:
-            return RESOURCE_ID_FOOTBALL;
+            return RESOURCE_ID_FOOTBALL_16;
         
          case SportMLB:
-            return RESOURCE_ID_BASEBALL;
+            return RESOURCE_ID_BASEBALL_16;
 
         case SportNHL:
-            return RESOURCE_ID_HOCKEY;
+            return RESOURCE_ID_HOCKEY_16;
 
         case SportNBA:
-            return RESOURCE_ID_BASKETBALL;
+            return RESOURCE_ID_BASKETBALL_16;
 
         default:
-            return RESOURCE_ID_STAR;
+            return RESOURCE_ID_STAR_16;
             break;
     }
 }
@@ -24,19 +24,19 @@ int sport_get_icon_res_small(Sport sport) {
 int sport_get_icon_res_large(Sport sport) {
     switch (sport){
         case SportNFL:
-            return RESOURCE_ID_FOOTBALL_LARGE;
+            return RESOURCE_ID_FOOTBALL_25;
         
          case SportMLB:
-            return RESOURCE_ID_BASEBALL_LARGE;
+            return RESOURCE_ID_BASEBALL_25;
 
         case SportNHL:
-            return RESOURCE_ID_HOCKEY_LARGE;
+            return RESOURCE_ID_HOCKEY_25;
 
         case SportNBA:
-            return RESOURCE_ID_BASKETBALL_LARGE;
+            return RESOURCE_ID_BASKETBALL_25;
 
         default:
-            return RESOURCE_ID_STAR_LARGE;
+            return RESOURCE_ID_STAR_25;
             break;
     }
 }

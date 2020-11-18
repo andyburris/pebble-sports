@@ -13,6 +13,7 @@ typedef struct {
 
 typedef struct {
     GDrawCommandSequence *command_seq;
+    GDrawCommandImage* command_img;
     int frame;
     char *label;
 } ResultLayerData;
@@ -69,12 +70,16 @@ static void result_layer_update_proc(Layer *layer, GContext *ctx) {
     GRect content_bounds = GRect(bounds.origin.x, bounds.size.h / 2 - (content_height / 2), bounds.size.w, content_height);
 
     GPoint icon_position = GPoint(content_bounds.size.w / 2 - 40, content_bounds.origin.y);
-    // Get the next frame
-    GDrawCommandFrame *frame = gdraw_command_sequence_get_frame_by_index(layer_data->command_seq, layer_data->frame);
-    
-    // If another frame was found, draw it
-    if (frame) {
-        gdraw_command_frame_draw(ctx, layer_data->command_seq, frame, icon_position);
+    if(layer_data->command_seq) {
+        // Get the next frame
+        GDrawCommandFrame *frame = gdraw_command_sequence_get_frame_by_index(layer_data->command_seq, layer_data->frame);
+        
+        // If another frame was found, draw it
+        if (frame) {
+            gdraw_command_frame_draw(ctx, layer_data->command_seq, frame, icon_position);
+        }
+    } else if (layer_data->command_img) {
+        gdraw_command_image_draw(ctx, layer_data->command_img, icon_position);
     }
 
     GRect text_bounds = GRect(content_bounds.origin.x, content_bounds.origin.y + 84, content_bounds.size.w, text_size.h);
@@ -82,13 +87,10 @@ static void result_layer_update_proc(Layer *layer, GContext *ctx) {
 
 }
 
-Window *result_window_create_window(Game *game, MenuAction action, FavoriteChangeResult result) {
+Window *result_window_create_favorite(Game *game, MenuAction action, FavoriteChangeResult result) {
     Window *result_window = window_create();
-    
     window_set_background_color(result_window, GColorOxfordBlue);
-
     Layer *root_layer = window_get_root_layer(result_window);
-
     GRect content_bounds = layer_get_bounds(root_layer);
     content_bounds.origin.x += PBL_IF_RECT_ELSE(16, 32);
     content_bounds.size.w -= PBL_IF_RECT_ELSE(32, 64);
@@ -97,12 +99,11 @@ Window *result_window_create_window(Game *game, MenuAction action, FavoriteChang
     layer_data->frame = 0;
 
     if (result == FavoriteChangeFailed) {
-        layer_data->command_seq = gdraw_command_sequence_create_with_resource(RESOURCE_ID_ANIM_DELETED);
+        layer_data->command_img = gdraw_command_image_create_with_resource(RESOURCE_ID_ERROR_80);
         layer_data->label = malloc(15);
         strcpy(layer_data->label, "No connection");
     } else {    
         char *action_label;
-
         switch (result) {
             case FavoriteAdded:
                 action_label = " added to ";
@@ -117,40 +118,35 @@ Window *result_window_create_window(Game *game, MenuAction action, FavoriteChang
                 break;
         }
         
+        switch (action) {
+            case ACTION_REFRESH_GAME:
+                layer_data->label = malloc(strlen(game->summary) + strlen(action_label) + 12);
+                strcpy(layer_data->label, game->summary);
+                break;
+            
+            case ACTION_TEAM_1:
+                layer_data->label = malloc(strlen(game->team1.name) + strlen(action_label) + 12);
+                strcpy(layer_data->label, game->team1.name);
+                break;
 
-        switch (action)
-        {
-        case ACTION_GAME:
-            layer_data->label = malloc(strlen(game->summary) + strlen(action_label) + 12);
-            strcpy(layer_data->label, game->summary);
-            break;
-        
-        case ACTION_TEAM_1:
-            layer_data->label = malloc(strlen(game->team1.name) + strlen(action_label) + 12);
-            strcpy(layer_data->label, game->team1.name);
-            break;
-
-        case ACTION_TEAM_2:
-            layer_data->label = malloc(strlen(game->team2.name) + strlen(action_label) + 15);
-            strcpy(layer_data->label, game->team2.name);
-            break;
-        default:
-            break;
+            case ACTION_TEAM_2:
+                layer_data->label = malloc(strlen(game->team2.name) + strlen(action_label) + 15);
+                strcpy(layer_data->label, game->team2.name);
+                break;
+            default:
+                break;
         }
 
         strcat(layer_data->label, " ");
         strcat(layer_data->label, action_label);
         strcat(layer_data->label, "Favorites");
-
     }
     
     layer_set_update_proc(content_layer, result_layer_update_proc);
-
     layer_add_child(root_layer, content_layer);
 
     ResultWindowData *data = malloc(sizeof(ResultWindowData)); 
     data->content_layer = content_layer;
-
     window_set_user_data(result_window, data);
 
     window_set_window_handlers(result_window, (WindowHandlers) {
@@ -159,8 +155,42 @@ Window *result_window_create_window(Game *game, MenuAction action, FavoriteChang
 
     // Start the animation
     app_timer_register(DELTA, next_frame_handler, content_layer);
-
     data->close_timer = app_timer_register(2000, close_timer_callback, result_window);
+    return result_window;
+}
 
+Window *result_window_create_refresh(Game *game, GameUpdateResult result) {
+    Window *result_window = window_create();
+    window_set_background_color(result_window, GColorOxfordBlue);
+    Layer *root_layer = window_get_root_layer(result_window);
+    GRect content_bounds = layer_get_bounds(root_layer);
+    content_bounds.origin.x += PBL_IF_RECT_ELSE(16, 32);
+    content_bounds.size.w -= PBL_IF_RECT_ELSE(32, 64);
+    Layer *content_layer = layer_create_with_data(content_bounds, sizeof(ResultLayerData));
+    ResultLayerData *layer_data = (ResultLayerData *) layer_get_data(content_layer);
+    layer_data->frame = 0;
+
+    if (result == GameUpdateNetworkError) {
+        layer_data->command_img = gdraw_command_image_create_with_resource(RESOURCE_ID_ERROR_80);
+        layer_data->label = malloc(15);
+        strcpy(layer_data->label, "No connection");
+    } else {
+        // show result window if updated?
+    }
+
+    layer_set_update_proc(content_layer, result_layer_update_proc);
+    layer_add_child(root_layer, content_layer);
+
+    ResultWindowData *data = malloc(sizeof(ResultWindowData)); 
+    data->content_layer = content_layer;
+    window_set_user_data(result_window, data);
+
+    window_set_window_handlers(result_window, (WindowHandlers) {
+        .unload = on_unload
+    });
+
+    // Start the animation
+    app_timer_register(DELTA, next_frame_handler, content_layer);
+    data->close_timer = app_timer_register(2000, close_timer_callback, result_window);
     return result_window;
 }

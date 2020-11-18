@@ -1,7 +1,7 @@
 #include "../../../data/model/models.h"
 
 typedef enum  {
-    ACTION_GAME, ACTION_TEAM_1, ACTION_TEAM_2
+    ACTION_REFRESH_GAME, ACTION_TEAM_1, ACTION_TEAM_2
 } MenuAction;
 
 typedef struct {

@@ -31,12 +31,27 @@ Pebble.addEventListener('appmessage', function(e) {
             api.getGames(
                 sport, 
                 (games) => {
-                    comms.sendGames(requestID, games);
+                    comms.sendGameList(requestID, games);
                 },
                 () => {
-                    comms.sendGamesError(requestID);
+                    comms.sendGameListError(requestID);
                 }
             );
+            break;
+
+        case ("UPDATE_GAME_ID" in dict):
+            const game_id = dict["UPDATE_GAME_ID"]
+            const game_sport = dict["UPDATE_GAME_SPORT"]
+            console.log("Updating game id = ", game_id, ", sport = ", game_sport)
+            api.getGame(
+                game_id.toString(), game_sport,
+                (game) => {
+                    comms.sendGameUpdate(requestID, game);
+                },
+                () => {
+                    comms.sendGameUpdateError(requestID);
+                }
+                )
             break;
 
         case ("ADD_FAVORITE_SPORT" in dict):

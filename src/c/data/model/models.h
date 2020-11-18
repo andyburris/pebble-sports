@@ -4,8 +4,12 @@
 #define MODELS_H_
 
 typedef enum {
-    DataListItem, DataLastListItem, DataNoGames, DataNetworkError
-} MessageData;
+    GamesListItem, GamesListLastItem, GamesListNoGames, GamesListNetworkError
+} GamesListState;
+
+typedef enum {
+    GameUpdated, GameUpdateNetworkError
+} GameUpdateResult;
 
 typedef enum {
     ConnectionError, NetworkError, NoGames

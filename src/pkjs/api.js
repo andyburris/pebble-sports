@@ -48,16 +48,21 @@ function getFavoriteGames(favorites, onLoad, onError) {
     })
 }
 
-function getGamesForSport(sport, onLoad, onError) {
-    var req = new XMLHttpRequest();
+function getEndpointForSport(sport) {
     var endpoint = "http://site.api.espn.com/apis/site/v2/sports";
     switch (sport) {
-        case sports.NFL: endpoint += '/football/nfl/scoreboard'; break;
-        case sports.MLB: endpoint += '/baseball/mlb/scoreboard'; break;
-        case sports.NHL: endpoint += '/hockey/nhl/scoreboard'; break;
-        case sports.NBA: endpoint += '/basketball/nba/scoreboard'; break;
+        case sports.NFL: endpoint += '/football/nfl'; break;
+        case sports.MLB: endpoint += '/baseball/mlb'; break;
+        case sports.NHL: endpoint += '/hockey/nhl'; break;
+        case sports.NBA: endpoint += '/basketball/nba'; break;
         default: break;
     }
+    return endpoint;
+}
+
+function getGamesForSport(sport, onLoad, onError) {
+    var req = new XMLHttpRequest();
+    const endpoint = getEndpointForSport(sport) + "/scoreboard"
     req.open('GET', endpoint);
     req.onload = function (e) {
         if (req.readyState == 4) {
@@ -80,16 +85,46 @@ function getGamesForSport(sport, onLoad, onError) {
     req.send();
 }
 
+function getGame(id, sport, onLoad, onError) {
+    console.log("getting game ", id, " for sport = ", sport);
+    var req = new XMLHttpRequest();
+    const endpoint = getEndpointForSport(sport) + "/summary?event=" + id;
+    console.log("endpoint = ", endpoint);
+    req.open('GET', endpoint);
+    req.onload = function (e) {
+        console.log("onload");
+        if (req.readyState == 4) {
+            // 200 - HTTP OK
+            if (req.status == 200) {
+                console.log("HTTP OK");
+                const sportsData = JSON.parse(req.responseText);
+                console.log("sportsData = ", sportsData);
+                const game = parseEvent(sport, sportsData.header);
+                console.log(JSON.stringify(game));
+                onLoad(game);
+                return;
+            }
+        }
+        // doesn't run if onLoad is called due to the return statement
+        onError();
+    }
+    req.onerror = function (e) {
+        onError()
+    }
+    req.send();
+}
+
 function parseEvent(sport, event) {
     const competitors = event.competitions[0].competitors;
-    const date = new Date(Date.parse(event.date));
+    const date = new Date(Date.parse(event.competitions[0].date));
+    const status = event.competitions[0].status
     const [details, time] = (function(type) {
         switch (type) {
             case "STATUS_FINAL": return [utils.dateToScheduleDate(date), "Final"];
             case "STATUS_SCHEDULED": return [utils.dateToScheduleDate(date), utils.dateToScheduleTime(date)];
-            default: return [gameDetails(sport, event.competitions[0].situation), event.status.type.shortDetail.replace("- ", "")];
+            default: return [gameDetails(sport, event.competitions[0].situation), status.type.shortDetail.replace("- ", "")];
         }
-    })(event.status.type.name);
+    })(status.type.name);
 
     const id = event.id
 
@@ -99,17 +134,17 @@ function parseEvent(sport, event) {
     const team2 = competitor2.team;
 
     //if the game hasn't started, the app shouldn't show the scores
-    const score1 = event.status.type.name == "STATUS_SCHEDULED" ? "" : competitor1.score;
-    const score2 = event.status.type.name == "STATUS_SCHEDULED" ? "" : competitor2.score;
+    const score1 = status.type.name == "STATUS_SCHEDULED" ? "" : competitor1.score;
+    const score2 = status.type.name == "STATUS_SCHEDULED" ? "" : competitor2.score;
 
-    const possession = event.status.type.name != "STATUS_IN_PROGRESS" ? models.possession.NONE : gamePossession(sport, event.competitions[0].situation, team1, team2);
+    const possession = status.type.name != "STATUS_IN_PROGRESS" ? models.possession.NONE : gamePossession(sport, event.competitions[0].situation, team1, team2);
 
     return new models.Game(
         id,
         sport,
-        new models.Team(team1.abbreviation, team1.id, competitor1.records[0].summary),
+        new models.Team(team1.abbreviation, team1.id, (competitor1.records || competitor1.record)[0].summary), //single-game and multi-game response name the records/record field differently, so accept both
         score1,
-        new models.Team(team2.abbreviation, team2.id, competitor2.records[0].summary),
+        new models.Team(team2.abbreviation, team2.id, (competitor2.records || competitor2.record)[0].summary),
         score2,
         possession,
         time,
@@ -138,3 +173,4 @@ function possessionByTeam(possessionID, team1, team2) {
 }
 
 module.exports.getGames = getGames;
+module.exports.getGame = getGame;

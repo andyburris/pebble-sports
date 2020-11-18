@@ -1,20 +1,20 @@
-const { messagedata, FavoriteTeam } = require('./models');
+const { gameslistdata, updategamedata, FavoriteTeam } = require('./models');
 const storage = require('./storage');
 
 require('./models');
 
-/******************* Games Comms *******************/
+/******************* Game List Comms *******************/
 
-function sendGames(requestID, games) {
+function sendGameList(requestID, games) {
     if (games.length == 0) {
-        sendGamesEmpty(requestID);
+        sendEmptyGameList(requestID);
     } else {
         console.log("sending games = ", JSON.stringify(games));
-        sendGame(requestID, games, 0);
+        sendGameListItem(requestID, games, 0);
     }
 }
 
-function sendGame(requestID, games, index) {
+function sendGameListItem(requestID, games, index) {
     console.log("sending item ", index);
     const game = games[index]
 
@@ -25,7 +25,7 @@ function sendGame(requestID, games, index) {
     const isLastItem = index == games.length - 1;
     const dict = {
         'REQUEST_ID': requestID,
-        'SEND_GAME': isLastItem ? messagedata.LAST_LIST_ITEM : messagedata.LIST_ITEM,
+        'SEND_GAME_LIST': isLastItem ? gameslistdata.LAST_LIST_ITEM : gameslistdata.LIST_ITEM,
         'SEND_GAME_ID': parseInt(game.id),
         'SEND_GAME_SPORT': game.sport,
         'SEND_GAME_TEAM_1_NAME': game.team1.name,
@@ -49,7 +49,7 @@ function sendGame(requestID, games, index) {
 
         if (index < games.length) {
             // Send next item
-            sendGame(requestID, games, index);
+            sendGameListItem(requestID, games, index);
         } else {
             console.log('Last item sent!');
         }
@@ -58,10 +58,10 @@ function sendGame(requestID, games, index) {
     });
 }
 
-function sendGamesEmpty(requestID) {
+function sendEmptyGameList(requestID) {
     var dict = {
         'REQUEST_ID': requestID,
-        'SEND_GAME': messagedata.NO_GAMES
+        'SEND_GAME_LIST': gameslistdata.NO_GAMES
     }
     Pebble.sendAppMessage(dict, function () {
         console.log("message success");
@@ -70,10 +70,58 @@ function sendGamesEmpty(requestID) {
     });
 }
 
-function sendGamesError(requestID) {
+function sendGameListError(requestID) {
     var dict = {
         'REQUEST_ID': requestID,
-        'SEND_GAME': messagedata.NETWORK_ERROR
+        'SEND_GAME_LIST': gameslistdata.NETWORK_ERROR
+    }
+    Pebble.sendAppMessage(dict, function () {
+        console.log("message success");
+    }, function () {
+        console.log('Item transmission failed');
+    });
+}
+
+/******************* Game Update Comms *******************/
+
+function sendGameUpdate(requestID, game) {
+    console.log("sending update");
+
+    const favorites = storage.favorites();
+    const team1Favorite = favorites.some(favoriteTeam => game.sport == favoriteTeam.sport && game.team1.id == favoriteTeam.teamID)
+    const team2Favorite = favorites.some(favoriteTeam => game.sport == favoriteTeam.sport && game.team2.id == favoriteTeam.teamID)
+
+    const dict = {
+        'REQUEST_ID': requestID,
+        'SEND_GAME_UPDATE': updategamedata.UPDATE_GAME,
+        'SEND_GAME_ID': parseInt(game.id),
+        'SEND_GAME_SPORT': game.sport,
+        'SEND_GAME_TEAM_1_NAME': game.team1.name,
+        'SEND_GAME_TEAM_2_NAME': game.team2.name,
+        'SEND_GAME_TEAM_1_ID': parseInt(game.team1.id),
+        'SEND_GAME_TEAM_2_ID': parseInt(game.team2.id),
+        'SEND_GAME_TEAM_1_SCORE': game.score1,
+        'SEND_GAME_TEAM_2_SCORE': game.score2,
+        'SEND_GAME_TEAM_1_RECORD': game.team1.record,
+        'SEND_GAME_TEAM_2_RECORD': game.team2.record,
+        'SEND_GAME_TEAM_1_FAVORITE': team1Favorite,
+        'SEND_GAME_TEAM_2_FAVORITE': team2Favorite,
+        'SEND_GAME_POSSESSION': game.possession,
+        'SEND_GAME_TIME': game.time,
+        'SEND_GAME_DETAILS': game.details,
+    }
+    Pebble.sendAppMessage(dict, function () {
+        console.log("message success");
+    }, function () {
+        console.log('Item transmission failed at index: ' + index);
+    });
+}
+
+function sendGameUpdateError(requestID) {
+    console.log("sending update error");
+    var dict = {
+        'REQUEST_ID': requestID,
+        'SEND_GAME_UPDATE': updategamedata.NETWORK_ERROR
     }
     Pebble.sendAppMessage(dict, function () {
         console.log("message success");
@@ -95,6 +143,8 @@ function sendFavoritesResult(requestID, result) {
     });
 }
 
-module.exports.sendGames = sendGames;
-module.exports.sendGamesError = sendGamesError;
+module.exports.sendGameList = sendGameList;
+module.exports.sendGameListError = sendGameListError;
+module.exports.sendGameUpdate = sendGameUpdate;
+module.exports.sendGameUpdateError = sendGameUpdateError;
 module.exports.sendFavoritesResult = sendFavoritesResult;

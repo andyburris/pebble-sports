@@ -12,9 +12,10 @@ static void score_update_proc(Layer *layer, GContext *ctx) {
     GFont font_record = fonts_get_system_font(FONT_KEY_GOTHIC_14);
 
     graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_context_set_text_color(ctx, GColorBlack);
+    
     GRect separator_bounds = GRect(layer_bounds.size.w / 2 - 1, 12, 2, 48);
 
-    graphics_context_set_text_color(ctx, GColorBlack);
 
     //record 1 is centered between the left edge and the divider
     GRect record_1_bounds = GRect(0, 0, separator_bounds.origin.x, 14);

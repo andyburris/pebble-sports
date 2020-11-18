@@ -12,11 +12,16 @@ const possession = {
     NONE: 2
 }
 
-const messagedata = {
+const gameslistdata = {
     LIST_ITEM: 0,
     LAST_LIST_ITEM: 1,
     NO_GAMES: 2,
     NETWORK_ERROR: 3
+}
+
+const updategamedata = {
+    UPDATE_GAME: 0,
+    NETWORK_ERROR: 1
 }
 
 function Team(name, id, record) {
@@ -48,7 +53,8 @@ function FavoriteTeam(sport, teamID) {
 module.exports = {
     sports: sports,
     possession: possession,
-    messagedata: messagedata,
+    gameslistdata: gameslistdata,
+    updategamedata: updategamedata,
     Team: Team,
     Game: Game,
     FavoriteTeam: FavoriteTeam

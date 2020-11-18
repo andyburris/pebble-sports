@@ -31,9 +31,12 @@
       "READY",
       "REQUEST_ID",
       "LOAD_GAMES",
+      "UPDATE_GAME_ID",
+      "UPDATE_GAME_SPORT",
       "ADD_FAVORITE_SPORT",
       "ADD_FAVORITE_TEAM_ID",
-      "SEND_GAME",
+      "SEND_GAME_LIST",
+      "SEND_GAME_UPDATE",
       "SEND_GAME_ID",
       "SEND_GAME_SPORT",
       "SEND_GAME_TEAM_1_NAME",
@@ -55,74 +58,79 @@
       "media": [
         {
           "type": "png",
-          "name": "BASEBALL",
-          "file": "images/Baseball Small.png"
+          "name": "BASEBALL_16",
+          "file": "images/Baseball-16.png"
         },
         {
           "type": "png",
-          "name": "BASKETBALL",
-          "file": "images/Basketball Small.png"
+          "name": "BASKETBALL_16",
+          "file": "images/Basketball-16.png"
         },
         {
           "type": "png",
-          "name": "FOOTBALL",
-          "file": "images/Football Small.png"
+          "name": "FOOTBALL_16",
+          "file": "images/Football-16.png"
         },
         {
           "type": "png",
-          "name": "HOCKEY",
-          "file": "images/Hockey Small.png"
+          "name": "HOCKEY_16",
+          "file": "images/Hockey-16.png"
         },
         {
           "type": "png",
-          "name": "SOCCER",
-          "file": "images/Soccer Small.png"
+          "name": "SOCCER_16",
+          "file": "images/Soccer-16.png"
         },
         {
           "type": "png",
-          "name": "STAR",
-          "file": "images/Star Small.png"
+          "name": "STAR_16",
+          "file": "images/Star-16.png"
         },
         {
           "type": "png",
-          "name": "BASEBALL_LARGE",
-          "file": "images/Baseball Large.png"
+          "name": "BASEBALL_25",
+          "file": "images/Baseball-25.png"
         },
         {
           "type": "png",
-          "name": "BASKETBALL_LARGE",
-          "file": "images/Basketball Large.png"
+          "name": "BASKETBALL_25",
+          "file": "images/Basketball-25.png"
         },
         {
           "type": "png",
-          "name": "ERROR_LARGE",
-          "file": "images/Error Large.png"
+          "name": "ERROR_25",
+          "file": "images/Error-25.png"
         },
         {
           "type": "png",
-          "name": "FOOTBALL_LARGE",
-          "file": "images/Football Large.png"
+          "name": "FOOTBALL_25",
+          "file": "images/Football-25.png"
         },
         {
           "menuIcon": true,
           "type": "png",
-          "name": "GENERIC_LARGE",
-          "file": "images/Generic Large.png"
+          "name": "GENERIC_25",
+          "file": "images/Generic-25.png"
         },
         {
           "type": "png",
-          "name": "HOCKEY_LARGE",
-          "file": "images/Hockey Large.png"
+          "name": "HOCKEY_25",
+          "file": "images/Hockey-25.png"
         },
         {
           "type": "png",
-          "name": "SOCCER_LARGE",
-          "file": "images/Soccer Large.png"
+          "name": "SOCCER_25",
+          "file": "images/Soccer-25.png"
         },
         {
           "type": "png",
-          "name": "STAR_LARGE",
-          "file": "images/Star Large.png"
+          "name": "STAR_25",
+          "file": "images/Star-25.png"
+        },
+        {
+            "type": "raw",
+            "name": "ERROR_80",
+            "file": "vector/error-80.pdc"
         },
         {
           "type": "raw",
