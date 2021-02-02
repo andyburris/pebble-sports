@@ -16,11 +16,11 @@ static void rect_header_update_proc(Layer *layer, GContext *ctx) {
     if (data->icon != NULL) {
         icon_padding = 32;
     }
-    GRect title_bounds = GRect(icon_padding, 0, title_size.w, 18);
+    GRect title_bounds = GRect(icon_padding, STATUS_BAR_LAYER_HEIGHT, title_size.w, 18);
     graphics_draw_text(ctx, data->title, title_font, title_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
 
     if (data->icon != NULL) {
-        GRect icon_bounds = GRect(8, 4, 16, 16);
+        GRect icon_bounds = GRect(8, 4 + STATUS_BAR_LAYER_HEIGHT, 16, 16);
         //gdraw_command_image_set_bounds_size(data->icon, icon_bounds.size);
         //gdraw_command_image_draw(ctx, data->icon, icon_bounds.origin);
         graphics_context_set_compositing_mode(ctx, GCompOpSet);

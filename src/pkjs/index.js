@@ -30,10 +30,10 @@ Pebble.addEventListener('appmessage', function(e) {
             console.log("LOAD_GAMES, sport = ", sport);
             api.getGames(
                 sport, 
-                (games) => {
+                function(games) {
                     comms.sendGameList(requestID, games);
                 },
-                () => {
+                function() {
                     comms.sendGameListError(requestID);
                 }
             );
@@ -45,10 +45,10 @@ Pebble.addEventListener('appmessage', function(e) {
             console.log("Updating game id = ", game_id, ", sport = ", game_sport)
             api.getGame(
                 game_id.toString(), game_sport,
-                (game) => {
+                function(game) {
                     comms.sendGameUpdate(requestID, game);
                 },
-                () => {
+                function() {
                     comms.sendGameUpdateError(requestID);
                 }
                 )

@@ -62,10 +62,10 @@ static void refresh_games(Sport sport) {
     refreshing = true;
     game_count = 0;
 
-    handle_request_games(sport, on_games_loaded, on_games_error);
     layer_set_hidden(s_error_layer, true);
     layer_set_hidden(text_layer_get_layer(s_loading_text), false); 
     progress_layer_set_hidden(s_loading_progress, false); 
+    handle_request_games(sport, on_games_loaded, on_games_error);
 }
 
 static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {

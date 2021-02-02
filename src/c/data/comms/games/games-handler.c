@@ -12,41 +12,41 @@ static GameListErrorCallback on_games_error;
 
 static GameUpdateCallback on_game_update;
 
-/* static void request_local(Sport sport) {
+ static void request_local(Sport sport) {
     switch (sport) {
     case SportNFL:
         printf("getting games for NFL");
-        games_count = 2;
-        games = malloc(games_count * sizeof(Game));
-        games[0] = (Game) {
-            .sport = SportNFL, 
-            .team1 = "DEN", 
-            .score1 = "17", 
-            .team2 = "NYJ", 
-            .score2 = "10", 
-            .possession = Team1, 
-            .time = "13:42 4th", 
-            .details = "3rd & 8 - DEN 37",
-            .summary = "DEN 17 - 10 NYJ",
-        };
-        games[1] = (Game) {
-            .sport = SportNFL, 
-            .team1 = "PIT", 
-            .score1 = "23", 
-            .team2 = "BAL", 
-            .score2 = "21", 
-            .possession = Team2, 
-            .time = "2:01 3rd", 
-            .details = "1st & 10 - BAL 25",
-            .summary = "PIT 23 - 21 BAL",
-        };
+        DictionaryIterator *game1;
+        AppMessageResult result1 = app_message_outbox_begin(&game1);
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_REQUEST_ID, current_request));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_LIST, GamesListLastItem));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_ID, 123));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_SPORT, SportNFL));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_TEAM_1_ID, 1));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_TEAM_1_NAME, "DEN"));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_TEAM_1_SCORE, "17"));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_TEAM_1_RECORD, "5-11"));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_TEAM_1_FAVORITE, true));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_TEAM_2_ID, 2));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_TEAM_2_NAME, "NYJ"));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_TEAM_2_SCORE, "10"));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_TEAM_2_RECORD, "2-14"));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_TEAM_2_FAVORITE, false));
+        dict_write_tuplet(game1, &TupletInteger(MESSAGE_KEY_SEND_GAME_POSSESSION, Team1));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_TIME, "13:42 4th"));
+        dict_write_tuplet(game1, &TupletCString(MESSAGE_KEY_SEND_GAME_DETAILS, "3rd & 8 - DEN 37"));
+        handle_games_recieved(game1);
         break;
     default:
         printf("getting games for other");
-        games_count = 0;
+        DictionaryIterator *game;
+        AppMessageResult result = app_message_outbox_begin(&game);
+        dict_write_tuplet(game, &TupletInteger(MESSAGE_KEY_REQUEST_ID, current_request));
+        dict_write_tuplet(game, &TupletInteger(MESSAGE_KEY_SEND_GAME_LIST, GamesListNoGames));
+        handle_games_recieved(game);
         break;
     }
-} */
+} 
 
 void handle_request_games(Sport sport, GameListSuccessCallback on_success, GameListErrorCallback on_error) {
 
@@ -54,12 +54,15 @@ void handle_request_games(Sport sport, GameListSuccessCallback on_success, GameL
         on_success(games_count, games);
     }
 
-    //request_local(sport);
 
     // generate a random id for the request so that if two requests happen at once, only the latest is loaded into memory
     int request_id = rand();
 
     printf("getting games for %s", sport_get_name(sport));
+/*     current_request = request_id;
+    on_games_success = on_success;
+    on_games_error = on_error;
+    request_local(sport); */
 
     DictionaryIterator *out_iter;
     AppMessageResult result = app_message_outbox_begin(&out_iter);
@@ -235,7 +238,9 @@ void handle_games_recieved(DictionaryIterator *iter) {
     int request_id = dict_find(iter, MESSAGE_KEY_REQUEST_ID)->value->int32;
 
     // if phone is sending games from a request the user stopped viewing, discard them 
-    if (request_id != current_request){ return; }
+    if (request_id != current_request){ 
+        return;
+    }
 
     GamesListState data = dict_find(iter, MESSAGE_KEY_SEND_GAME_LIST)->value->int8;
 
