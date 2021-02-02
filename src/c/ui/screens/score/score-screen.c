@@ -66,18 +66,20 @@ static void initialise_ui(Window *window) {
     bounds.origin.y += layer_get_bounds(s_score).size.h + 4;
     bounds.size.h -= layer_get_bounds(s_score).size.h + 4; 
 
-    GRect details_bounds = bounds;
-    details_bounds.size.h = 18;
-    s_details = text_layer_create(details_bounds);
-    text_layer_set_font(s_details, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-    text_layer_set_text_alignment(s_details, GTextAlignmentCenter);
-    text_layer_set_text(s_details, s_game->details);
-    Layer *details_layer =  text_layer_get_layer(s_details);
-    layer_set_clips(details_layer, false);
-    layer_add_child(window_layer, details_layer);
+    if (strlen(s_game->details) > 0) {
+        GRect details_bounds = bounds;
+        details_bounds.size.h = 18;
+        s_details = text_layer_create(details_bounds);
+        text_layer_set_font(s_details, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+        text_layer_set_text_alignment(s_details, GTextAlignmentCenter);
+        text_layer_set_text(s_details, s_game->details);
+        Layer *details_layer =  text_layer_get_layer(s_details);
+        layer_set_clips(details_layer, false);
+        layer_add_child(window_layer, details_layer);
+        bounds.origin.y += 14;
+        bounds.size.h -= 14; 
+    }
 
-    bounds.origin.y += 14;
-    bounds.size.h -= 14; 
 
     GRect time_bounds = bounds;
     time_bounds.size.h = 24;

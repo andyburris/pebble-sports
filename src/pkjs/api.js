@@ -156,6 +156,7 @@ function parseEvent(sport, event) {
 }
 
 function gameDetails(sport, situation) {
+    if(situation == undefined || situation == null) return "";
     switch (sport) {
         case sports.NFL: return situation.downDistanceText || "";
         case sports.MLB: return situation.balls + "-" + situation.strikes + ", " + situation.outs + " outs"; 
