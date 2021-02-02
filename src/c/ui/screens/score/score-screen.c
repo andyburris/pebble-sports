@@ -38,19 +38,20 @@ static void initialise_ui(Window *window) {
 
     s_icon_image = gbitmap_create_with_resource(sport_get_icon_res_small(s_game->sport));
     s_status_bar = status_bar_layer_create();
-    status_bar_layer_set_colors(s_status_bar, GColorOxfordBlue, GColorWhite);
-    layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
+    status_bar_layer_set_colors(s_status_bar, GColorDukeBlue, GColorWhite);
 
-    bounds.origin.y += STATUS_BAR_LAYER_HEIGHT;
-    bounds.size.h -= STATUS_BAR_LAYER_HEIGHT;
+    //bounds.origin.y += STATUS_BAR_LAYER_HEIGHT;
+    //bounds.size.h -= STATUS_BAR_LAYER_HEIGHT;
 
     s_header = create_header_layer(bounds, (HeaderData) {
         .icon = s_icon_image, 
         .title = sport_get_name(s_game->sport),
         .info = s_game->time,
+        .under_status_bar = true,
     });
 
     layer_add_child(window_layer, s_header);
+    layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
     int header_height = layer_get_bounds(s_header).size.h;
     
@@ -105,6 +106,10 @@ static void destroy_ui(Window *window) {
 static void handle_window_unload(Window *window) {
     destroy_ui(window);
 }
+static void refresh_ui(Window *window) {
+    destroy_ui(window);
+    initialise_ui(window);
+}
 void show_score_screen(Game *game)
 {
     scoreWindow = window_create();
@@ -114,6 +119,7 @@ void show_score_screen(Game *game)
         scoreWindow,
         (WindowHandlers){
             .unload = handle_window_unload,
+            .appear = refresh_ui,
         });
     window_set_click_config_provider(scoreWindow, click_config_provider);
     window_stack_push(scoreWindow, true);

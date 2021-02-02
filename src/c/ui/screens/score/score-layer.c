@@ -1,5 +1,6 @@
 #include "pebble.h"
 #include "score-layer.h"
+#include "../../../data/comms/prefs/prefs-handler.h"
 
 static void score_update_proc(Layer *layer, GContext *ctx) {
     Game *game = *(Game **)layer_get_data(layer);
@@ -16,28 +17,32 @@ static void score_update_proc(Layer *layer, GContext *ctx) {
     
     GRect separator_bounds = GRect(layer_bounds.size.w / 2 - 1, 12, 2, 48);
 
+    bool record_showing = clay_settings.show_record == ShowRecordAlways || (clay_settings.show_record == ShowRecordFinalOnly && strcmp(game->time, "Final")==0);
+    if (record_showing) {
+        //record 1 is centered between the left edge and the divider
+        GRect record_1_bounds = GRect(0, 0, separator_bounds.origin.x, 14);
+        graphics_draw_text(ctx, game->team1.record, font_record, record_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+        //record 2 is centered between the divider and the right edge
+        GRect record_2_bounds = GRect(separator_bounds.origin.x + separator_bounds.size.w, 0, separator_bounds.origin.x, 14);
+        graphics_draw_text(ctx, game->team2.record, font_record, record_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+    }
 
-    //record 1 is centered between the left edge and the divider
-    GRect record_1_bounds = GRect(0, 0, separator_bounds.origin.x, 14);
-    graphics_draw_text(ctx, game->team1.record, font_record, record_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-    //record 2 is centered between the divider and the right edge
-    GRect record_2_bounds = GRect(separator_bounds.origin.x + separator_bounds.size.w, 0, separator_bounds.origin.x, 14);
-    graphics_draw_text(ctx, game->team2.record, font_record, record_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-
+    int score_y = record_showing ? (has_long_score ? 11 : 7) : (has_long_score ? 4 : 0);
     //score 1 is centered between the left edge and the divider
-    GRect score_1_bounds = GRect(0, has_long_score ? 11 : 7, separator_bounds.origin.x, 42);
+    GRect score_1_bounds = GRect(0, score_y, separator_bounds.origin.x, 42);
     graphics_draw_text(ctx, game->team1.score, font_score, score_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     //score 2 is centered between the divider and the right edge
-    GRect score_2_bounds = GRect(separator_bounds.origin.x + separator_bounds.size.w, has_long_score ? 11 : 7, separator_bounds.origin.x, 42);
+    GRect score_2_bounds = GRect(separator_bounds.origin.x + separator_bounds.size.w, score_y, separator_bounds.origin.x, 42);
     graphics_draw_text(ctx, game->team2.score, font_score, score_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
 
     //if a possession indicator is showing, 10px more of content needs to be centered (6px padding + 4px indicator)
     //so offset text by half of that
     int possession_offset = 5;
+    int possession_y = record_showing ? 50 : 43;
 
     bool team_1_possession = (game->possession) == Team1;
     GSize team_1_size = graphics_text_layout_get_content_size(game->team1.name, font_team, score_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter);
-    GRect team_1_bounds = GRect(score_1_bounds.size.w/2 - team_1_size.w/2 - (team_1_possession ? possession_offset : 0), 50, team_1_size.w, 26);
+    GRect team_1_bounds = GRect(score_1_bounds.size.w/2 - team_1_size.w/2 - (team_1_possession ? possession_offset : 0), possession_y, team_1_size.w, 26);
     graphics_draw_text(ctx, game->team1.name, font_team, team_1_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     if (team_1_possession) {
         graphics_fill_circle(ctx, GPoint(team_1_bounds.origin.x + team_1_bounds.size.w + 6 - 2, team_1_bounds.origin.y + team_1_bounds.size.h /2), 2);
@@ -45,7 +50,7 @@ static void score_update_proc(Layer *layer, GContext *ctx) {
 
     bool team_2_possession = (game->possession) == Team2;
     GSize team_2_size = graphics_text_layout_get_content_size(game->team2.name, font_team, score_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter);
-    GRect team_2_bounds = GRect(score_2_bounds.origin.x + score_2_bounds.size.w/2 - team_2_size.w/2 - (team_2_possession ? possession_offset : 0), 50, team_2_size.w, 26);
+    GRect team_2_bounds = GRect(score_2_bounds.origin.x + score_2_bounds.size.w/2 - team_2_size.w/2 - (team_2_possession ? possession_offset : 0), possession_y, team_2_size.w, 26);
     graphics_draw_text(ctx, game->team2.name, font_team, team_2_bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     if (team_2_possession) {
         graphics_fill_circle(ctx, GPoint(team_2_bounds.origin.x + team_2_bounds.size.w + 6 - 2, team_2_bounds.origin.y + team_2_bounds.size.h /2), 2);

@@ -16,12 +16,17 @@
 
 static Window *gamesWindow;
 static StatusBarLayer *s_status_bar;
-static Layer *s_header;
+static HeaderLayer *s_header;
 static MenuLayer *s_menu_layer;
 static GBitmap *s_icon_image;
 static TextLayer *s_loading_text;
 static ProgressLayer *s_loading_progress;
 static ErrorLayer *s_error_layer;
+#if defined(PBL_ROUND)
+static ContentIndicator *s_content_indicator;
+static Layer *s_indicator_layer;
+#endif
+
 
 static int game_count;
 static Game **games;
@@ -29,19 +34,22 @@ static Sport s_sport;
 static bool refreshing;
 
 static void on_games_loaded(int loaded_game_count, Game **loaded_games) {
-    APP_LOG(APP_LOG_LEVEL_WARNING, "games loaded callback");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "games loaded callback");
     game_count = loaded_game_count;
     games = loaded_games;
     if(s_menu_layer != NULL) {
         menu_layer_reload_data(s_menu_layer);
     }
+    #if defined(PBL_ROUND)
+    content_indicator_set_content_available(s_content_indicator, ContentIndicatorDirectionDown, game_count > 2);
+    #endif
     layer_set_hidden(text_layer_get_layer(s_loading_text), true); 
     progress_layer_set_hidden(s_loading_progress, true); 
     refreshing = false;
 }
 
 static void on_games_error(AppError error) {
-    APP_LOG(APP_LOG_LEVEL_WARNING, "games error callback");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "games error callback");
     layer_set_hidden(text_layer_get_layer(s_loading_text), true); 
     progress_layer_set_hidden(s_loading_progress, true); 
     error_layer_set_error(s_error_layer, error);
@@ -50,7 +58,7 @@ static void on_games_error(AppError error) {
 }
 
 static void refresh_games(Sport sport) {
-    APP_LOG(APP_LOG_LEVEL_WARNING, "refreshing games = %s", refreshing ? "true" : "false");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "refreshing games = %s", refreshing ? "true" : "false");
     refreshing = true;
     game_count = 0;
 
@@ -157,27 +165,52 @@ static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, v
     }
 }
 
+static void menu_selection_changed_callback(MenuLayer *menu_layer, MenuIndex new_index, MenuIndex old_index, void *callback_context) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "menu selection changed from %d to %d", old_index.row, new_index.row);
+    GRect old_header_bounds = layer_get_bounds(s_header);
+    if (new_index.row == 0) {
+        layer_set_hidden(status_bar_layer_get_layer(s_status_bar), false);
+        header_layer_set_under_status_bar(s_header, true);
+        //layer_set_bounds(s_header, GRect(0, STATUS_BAR_LAYER_HEIGHT, old_header_bounds.size.w, 26));
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "expanded, header y from %d to %d", old_header_bounds.origin.y, layer_get_bounds(s_header).origin.y);
+        //header_layer_set_under_status_bar(s_header, true);
+    } else if (old_index.row == 0) { //only do scroll conversion if coming from index 0
+        layer_set_hidden(status_bar_layer_get_layer(s_status_bar), true);
+        header_layer_set_under_status_bar(s_header, false);
+        //layer_set_bounds(s_header, GRect(0, 0, old_header_bounds.size.w, 56));
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "collapsed, header y from %d to %d", old_header_bounds.origin.y, layer_get_bounds(s_header).origin.y);
+        //header_layer_set_under_status_bar(s_header, false);
+    }
+    #if defined(PBL_ROUND)
+    content_indicator_set_content_available(s_content_indicator, ContentIndicatorDirectionDown, new_index.row < game_count - 2);
+    #endif
+    
+}
+
 static void initialise_ui(Window *window, Sport sport)
 {
-    APP_LOG(APP_LOG_LEVEL_WARNING, "opening games-menu");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "opening games-menu");
     s_sport = sport;
     s_icon_image = gbitmap_create_with_resource(sport_get_icon_res_small(sport));
 
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_frame(window_layer);
     s_status_bar = status_bar_layer_create();
-    status_bar_layer_set_colors(s_status_bar, GColorOxfordBlue, GColorWhite);
-    layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
+    status_bar_layer_set_colors(s_status_bar, GColorDukeBlue, GColorWhite);
 
-    bounds.origin.y += STATUS_BAR_LAYER_HEIGHT;
-    bounds.size.h -= STATUS_BAR_LAYER_HEIGHT;
+    // bounds.origin.y += STATUS_BAR_LAYER_HEIGHT;
+    // bounds.size.h -= STATUS_BAR_LAYER_HEIGHT; 
 
 
     s_header = create_header_layer(bounds, (HeaderData) {
         .icon = s_icon_image, 
         .title = sport_get_name(sport),
+        .under_status_bar = true,
     });
     int header_height = PBL_IF_RECT_ELSE(layer_get_bounds(s_header).size.h, 8);
+
+    // bounds.origin.y -= STATUS_BAR_LAYER_HEIGHT;
+    // bounds.size.h += STATUS_BAR_LAYER_HEIGHT; 
     
     bounds.origin.y += header_height + 4;
     bounds.size.h -= header_height + 4; 
@@ -188,17 +221,19 @@ static void initialise_ui(Window *window, Sport sport)
         .get_cell_height = menu_get_row_height_callback,
         .draw_row = menu_draw_row_callback,
         .select_click = menu_select_callback,
+        .selection_changed = menu_selection_changed_callback,
     });
 
-    menu_layer_set_highlight_colors(s_menu_layer, GColorOxfordBlue, GColorWhite);
+    menu_layer_set_highlight_colors(s_menu_layer, GColorDukeBlue, GColorWhite);
     menu_layer_set_click_config_onto_window(s_menu_layer, window);
 
     layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
 
     layer_add_child(window_layer, s_header);
+    layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
     GRect loading_section_bounds = bounds;
-    loading_section_bounds.origin.y += bounds.size.h / 2 - 20;
+    loading_section_bounds.origin.y += bounds.size.h / 2 - 16;
     loading_section_bounds.origin.x += PBL_IF_ROUND_ELSE(32, 16);
     loading_section_bounds.size.w -= PBL_IF_ROUND_ELSE(64, 32);
     loading_section_bounds.size.h = 28;
@@ -208,7 +243,7 @@ static void initialise_ui(Window *window, Sport sport)
     loading_bar_bounds.size.h = 4;
     s_loading_progress = progress_layer_create(loading_bar_bounds);
     progress_layer_set_background_color(s_loading_progress, GColorVeryLightBlue);
-    progress_layer_set_foreground_color(s_loading_progress, GColorOxfordBlue);
+    progress_layer_set_foreground_color(s_loading_progress, GColorDukeBlue);
     progress_layer_set_corner_radius(s_loading_progress, 2);
     layer_add_child(window_layer, s_loading_progress);
 
@@ -226,6 +261,22 @@ static void initialise_ui(Window *window, Sport sport)
     layer_set_hidden(s_error_layer, true);
     layer_add_child(window_layer, s_error_layer);
 
+    #if defined(PBL_ROUND)
+    s_content_indicator = content_indicator_create();
+    s_indicator_layer = layer_create(GRect(0, layer_get_frame(window_layer).size.h - STATUS_BAR_LAYER_HEIGHT, bounds.size.w, STATUS_BAR_LAYER_HEIGHT));
+    const ContentIndicatorConfig down_config = (ContentIndicatorConfig) {
+        .layer = s_indicator_layer,
+        .times_out = false,
+        .alignment = GAlignCenter,
+        .colors = {
+            .foreground = GColorBlack,
+            .background = GColorWhite
+        }
+    };
+    content_indicator_configure_direction(s_content_indicator, ContentIndicatorDirectionDown, &down_config);
+    layer_add_child(window_layer, s_indicator_layer);
+    #endif
+
     refresh_games(sport);
 }
 
@@ -238,6 +289,9 @@ static void destroy_ui(Window *window)
     text_layer_destroy(s_loading_text);
     gbitmap_destroy(s_icon_image);
     error_layer_destroy(s_error_layer);
+    #if defined(PBL_ROUND)
+    layer_destroy(s_indicator_layer);
+    #endif
 }
 
 static void handle_window_unload(Window *window){

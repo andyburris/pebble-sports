@@ -52,7 +52,9 @@
       "SEND_GAME_POSSESSION",
       "SEND_GAME_TIME",
       "SEND_GAME_DETAILS",
-      "CONFIRM_FAVORITE"
+      "CONFIRM_FAVORITE",
+      "CONFIG_LEAGUES",
+      "CONFIG_SHOW_RECORDS"
     ],
     "resources": {
       "media": [

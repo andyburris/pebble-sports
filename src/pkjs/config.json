@@ -1,16 +1,56 @@
 [
     { 
-      "type": "heading", 
-      "defaultValue": "Sports Settings",
-      "size": 1
+        "type": "heading", 
+        "defaultValue": "Sports Settings",
+        "size": 1
     }, 
     {
         "type": "section",
         "items": [
-          {
-            "type": "heading",
-            "defaultValue": "Leagues"
-          }
+            {
+                "type": "heading",
+                "defaultValue": "Leagues"
+            },
+            {
+                "type": "checkboxgroup",
+                "messageKey": "CONFIG_LEAGUES",
+                "label": "Visible Leagues",
+                "defaultValue": [true, true, true, true],
+                "options": ["NFL", "MLB", "NHL", "NBA"]
+            }
         ]
-      }
-  ]
+    },
+    {
+        "type": "section",
+        "items": [
+            {
+                "type": "heading",
+                "defaultValue": "Display"
+            },
+            {
+                "type": "select",
+                "messageKey": "CONFIG_SHOW_RECORDS",
+                "defaultValue": "final-only",
+                "label": "Show Records",
+                "options": [
+                    { 
+                        "label": "Never",
+                        "value": "never" 
+                    },
+                    { 
+                        "label": "Final Scores Only",
+                        "value": "final-only" 
+                    },
+                    { 
+                        "label": "Always",
+                        "value": "always" 
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "submit",
+        "defaultValue": "Save"
+    }
+]

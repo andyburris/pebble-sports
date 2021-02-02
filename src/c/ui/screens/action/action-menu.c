@@ -32,7 +32,8 @@ static void favorite_change_callback(int team_id, FavoriteChangeResult result) {
 }
 
 static void game_update_callback(GameUpdateResult state) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "game update callbac, result = %d", state);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "game update callback, result = %d", state);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "game update callback, game pointer = %p", s_game);
     if (state == GameUpdated) {
         action_menu_unfreeze(s_action_menu);
         action_menu_close(s_action_menu, true);
@@ -112,7 +113,7 @@ void game_action_menu_open(Game *game) {
     config = (ActionMenuConfig) {
         .root_level = s_level,
         .colors = {
-            .background = GColorOxfordBlue,
+            .background = GColorDukeBlue,
             .foreground = GColorWhite
         },
         .context = &s_labels,

@@ -52,7 +52,7 @@ static void initialise_ui(Window *window) {
         .draw_row = menu_draw_row_callback,
         .select_click = menu_select_callback,
     });
-    menu_layer_set_highlight_colors(s_menu_layer, GColorOxfordBlue, GColorWhite);
+    menu_layer_set_highlight_colors(s_menu_layer, GColorDukeBlue, GColorWhite);
     menu_layer_set_click_config_onto_window(s_menu_layer, window);
 
 

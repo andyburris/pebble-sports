@@ -139,12 +139,15 @@ function parseEvent(sport, event) {
 
     const possession = status.type.name != "STATUS_IN_PROGRESS" ? models.possession.NONE : gamePossession(sport, event.competitions[0].situation, team1, team2);
 
+    const team1Record = (competitor1.records || competitor1.record) ? (competitor1.records || competitor1.record)[0].summary : "0-0"
+    const team2Record = (competitor2.records || competitor2.record) ? (competitor2.records || competitor2.record)[0].summary : "0-0"
+
     return new models.Game(
         id,
         sport,
-        new models.Team(team1.abbreviation, team1.id, (competitor1.records || competitor1.record)[0].summary), //single-game and multi-game response name the records/record field differently, so accept both
+        new models.Team(team1.abbreviation, team1.id, team1Record), //single-game and multi-game response name the records/record field differently, so accept both
         score1,
-        new models.Team(team2.abbreviation, team2.id, (competitor2.records || competitor2.record)[0].summary),
+        new models.Team(team2.abbreviation, team2.id, team2Record),
         score2,
         possession,
         time,

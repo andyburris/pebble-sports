@@ -89,7 +89,7 @@ static void result_layer_update_proc(Layer *layer, GContext *ctx) {
 
 Window *result_window_create_favorite(Game *game, MenuAction action, FavoriteChangeResult result) {
     Window *result_window = window_create();
-    window_set_background_color(result_window, GColorOxfordBlue);
+    window_set_background_color(result_window, GColorDukeBlue);
     Layer *root_layer = window_get_root_layer(result_window);
     GRect content_bounds = layer_get_bounds(root_layer);
     content_bounds.origin.x += PBL_IF_RECT_ELSE(16, 32);
@@ -161,7 +161,7 @@ Window *result_window_create_favorite(Game *game, MenuAction action, FavoriteCha
 
 Window *result_window_create_refresh(Game *game, GameUpdateResult result) {
     Window *result_window = window_create();
-    window_set_background_color(result_window, GColorOxfordBlue);
+    window_set_background_color(result_window, GColorDukeBlue);
     Layer *root_layer = window_get_root_layer(result_window);
     GRect content_bounds = layer_get_bounds(root_layer);
     content_bounds.origin.x += PBL_IF_RECT_ELSE(16, 32);
