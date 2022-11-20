@@ -18,7 +18,7 @@ function sendGameListItem(requestID, games, index) {
     console.log("sending item ", index);
     const game = games[index]
 
-    const favorites = storage.favorites();
+    const favorites = storage.storedFavorites();
     const team1Favorite = favorites.some(favoriteTeam => game.sport == favoriteTeam.sport && game.team1.id == favoriteTeam.teamID)
     const team2Favorite = favorites.some(favoriteTeam => game.sport == favoriteTeam.sport && game.team2.id == favoriteTeam.teamID)
 
@@ -87,7 +87,7 @@ function sendGameListError(requestID) {
 function sendGameUpdate(requestID, game) {
     console.log("sending update");
 
-    const favorites = storage.favorites();
+    const favorites = storage.storedFavorites();
     const team1Favorite = favorites.some(favoriteTeam => game.sport == favoriteTeam.sport && game.team1.id == favoriteTeam.teamID)
     const team2Favorite = favorites.some(favoriteTeam => game.sport == favoriteTeam.sport && game.team2.id == favoriteTeam.teamID)
 

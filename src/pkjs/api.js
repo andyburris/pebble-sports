@@ -1,16 +1,18 @@
 const models = require('./models');
 const storage = require('./storage');
 const utils = require('./utils');
+const mock = require('./mock');
 const { sports, possession } = require('./models');
-
-require('./models');
 
 // to get team schedule only, url is http://site.api.espn.com/apis/site/v2/sports/:sport/:league/teams/:id/schedule
 // to get more info on specific game, url is http://site.api.espn.com/apis/site/v2/sports/:sport/:league/summary?event=:id
 
+const DEBUG_MOCK = false;
+
 function getGames(sport, onLoad, onError) {
+
     if (sport == sports.FAVORITES) { 
-        getFavoriteGames(storage.favorites(), onLoad, onError);
+        getFavoriteGames(storage.storedFavorites(), onLoad, onError);
     } else {
         getGamesForSport(sport, onLoad, onError)
     }
@@ -61,6 +63,7 @@ function getEndpointForSport(sport) {
 }
 
 function getGamesForSport(sport, onLoad, onError) {
+    if (DEBUG_MOCK) return mock.nfl;
     var req = new XMLHttpRequest();
     const endpoint = getEndpointForSport(sport) + "/scoreboard"
     req.open('GET', endpoint);
@@ -71,7 +74,7 @@ function getGamesForSport(sport, onLoad, onError) {
                 const sportsData = JSON.parse(req.responseText);
                 const events = sportsData.events;
                 const games = events.map(event => parseEvent(sport, event));
-                console.log(JSON.stringify(games));
+                console.log("games = ", JSON.stringify(games));
                 onLoad(games);
                 return;
             }
@@ -87,31 +90,45 @@ function getGamesForSport(sport, onLoad, onError) {
 
 function getGame(id, sport, onLoad, onError) {
     console.log("getting game ", id, " for sport = ", sport);
-    var req = new XMLHttpRequest();
-    const endpoint = getEndpointForSport(sport) + "/summary?event=" + id;
-    console.log("endpoint = ", endpoint);
-    req.open('GET', endpoint);
-    req.onload = function (e) {
-        console.log("onload");
-        if (req.readyState == 4) {
-            // 200 - HTTP OK
-            if (req.status == 200) {
-                console.log("HTTP OK");
-                const sportsData = JSON.parse(req.responseText);
-                console.log("sportsData = ", sportsData);
-                const game = parseEvent(sport, sportsData.header);
-                console.log(JSON.stringify(game));
-                onLoad(game);
-                return;
+    getGamesForSport(
+        sport, 
+        (games) => { 
+            //console.log("games = ", games)
+            let foundGame = games.find(g => g.id == id)
+            console.log("foundGame = ", JSON.stringify(foundGame));
+            if(foundGame == undefined) {
+                onError();
+            } else {
+                onLoad(foundGame);
             }
-        }
-        // doesn't run if onLoad is called due to the return statement
-        onError();
-    }
-    req.onerror = function (e) {
-        onError()
-    }
-    req.send();
+            //onLoad(games.filter(g => true)
+         },
+        onError)
+    // var req = new XMLHttpRequest();
+    // const endpoint = getEndpointForSport(sport) + "/summary?event=" + id;
+    // console.log("endpoint = ", endpoint);
+    // req.open('GET', endpoint);
+    // req.onload = function (e) {
+    //     console.log("onload");
+    //     if (req.readyState == 4) {
+    //         // 200 - HTTP OK
+    //         if (req.status == 200) {
+    //             console.log("HTTP OK");
+    //             const sportsData = JSON.parse(req.responseText);
+    //             //console.log("sportsData = ", JSON.stringify(sportsData));
+    //             const game = parseEvent(sport, sportsData.header);
+    //             //console.log(JSON.stringify(game));
+    //             onLoad(game);
+    //             return;
+    //         }
+    //     }
+    //     // doesn't run if onLoad is called due to the return statement
+    //     onError();
+    // }
+    // req.onerror = function (e) {
+    //     onError()
+    // }
+    // req.send();
 }
 
 function parseEvent(sport, event) {

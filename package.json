@@ -130,9 +130,9 @@
           "file": "images/Star-25.png"
         },
         {
-            "type": "raw",
-            "name": "ERROR_80",
-            "file": "vector/error-80.pdc"
+          "type": "raw",
+          "name": "ERROR_80",
+          "file": "vector/error-80.pdc"
         },
         {
           "type": "raw",

@@ -1,7 +1,7 @@
 const { FavoriteTeam, sports } = require('./models');
 var models = require('./models');
 
-function favorites() { return JSON.parse(localStorage.getItem('favorites')); }
+function storedFavorites() { return JSON.parse(localStorage.getItem('favorites')); }
 function updateFavorite(favoriteTeam) {
     var currentFavorites = favorites();
     if (currentFavorites.some(ft => ft.sport == favoriteTeam.sport && ft.teamID == favoriteTeam.teamID)) {
@@ -18,6 +18,6 @@ function updateFavorite(favoriteTeam) {
 }
 
 module.exports = {
-    favorites: favorites,
+    storedFavorites: storedFavorites,
     updateFavorite: updateFavorite
 }
