@@ -53,16 +53,16 @@ int16_t get_anim_progress(void *subject) {
 }
 
 void animation_repeat_handler (Animation *animation, bool finished, void *context) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "animation ended");
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "animation ended");
     ProgressLayer *progress_layer = (ProgressLayer*) context;
     ProgressLayerData *data = (ProgressLayerData *)layer_get_data(progress_layer);
     bool hidden = layer_get_hidden(progress_layer);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation = %s", !hidden ? "true" : "false");    
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, animation pointer = %p", animation);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, struct animation == NULL = %s", data->animation == NULL ? "true" : "false");
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, struct animation pointer = %p", data->animation);
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation = %s", !hidden ? "true" : "false");    
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, animation pointer = %p", animation);
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, struct animation == NULL = %s", data->animation == NULL ? "true" : "false");
+    // APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, struct animation pointer = %p", data->animation);
     if (!hidden) {
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, animation == NULL = %s", data->animation == NULL ? "true" : "false");
+        // APP_LOG(APP_LOG_LEVEL_DEBUG, "repeating animation, animation == NULL = %s", data->animation == NULL ? "true" : "false");
         animation_schedule(animation);
     }
 }

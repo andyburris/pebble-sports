@@ -50,7 +50,9 @@ function dateToScheduleDate(date) {
 function dateToScheduleTime(date) {
     const mins = date.getMinutes();
     const hours = date.getHours();
-    return hours % 12  + ":" + (mins <= 9 ? '0' + mins : mins) + (hours >= 12 ? "pm" : "am")
+    const formattedHours = ((hours - 1) % 12) + 1; // convert 0 to 12
+    // console.log("converting date to schedule time, date = ", date, ", hours = ", formattedHours)
+    return formattedHours + ":" + (mins <= 9 ? '0' + mins : mins) + (hours >= 12 ? "pm" : "am")
 }
 
 module.exports.groupBy = groupBy;

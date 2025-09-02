@@ -2,7 +2,6 @@ const models = require('./models');
 const storage = require('./storage');
 const utils = require('./utils');
 const mock = require('./mock');
-const { sports, possession } = require('./models');
 
 // to get team schedule only, url is http://site.api.espn.com/apis/site/v2/sports/:sport/:league/teams/:id/schedule
 // to get more info on specific game, url is http://site.api.espn.com/apis/site/v2/sports/:sport/:league/summary?event=:id
@@ -10,8 +9,7 @@ const { sports, possession } = require('./models');
 const DEBUG_MOCK = false;
 
 function getGames(sport, onLoad, onError) {
-
-    if (sport == sports.FAVORITES) { 
+    if (sport == models.sports.FAVORITES) { 
         getFavoriteGames(storage.storedFavorites(), onLoad, onError);
     } else {
         getGamesForSport(sport, onLoad, onError)
@@ -20,6 +18,10 @@ function getGames(sport, onLoad, onError) {
 }
 
 function getFavoriteGames(favorites, onLoad, onError) {
+    if(favorites.length == 0) {
+        onLoad([]);
+        return;
+    }
     console.log("getting favorite games");
     const sportGroups = utils.groupBy(favorites, favoriteItem => favoriteItem.sport);
     console.log("sportGroups = ", JSON.stringify(sportGroups));
@@ -53,10 +55,10 @@ function getFavoriteGames(favorites, onLoad, onError) {
 function getEndpointForSport(sport) {
     var endpoint = "http://site.api.espn.com/apis/site/v2/sports";
     switch (sport) {
-        case sports.NFL: endpoint += '/football/nfl'; break;
-        case sports.MLB: endpoint += '/baseball/mlb'; break;
-        case sports.NHL: endpoint += '/hockey/nhl'; break;
-        case sports.NBA: endpoint += '/basketball/nba'; break;
+        case models.sports.NFL: endpoint += '/football/nfl'; break;
+        case models.sports.MLB: endpoint += '/baseball/mlb'; break;
+        case models.sports.NHL: endpoint += '/hockey/nhl'; break;
+        case models.sports.NBA: endpoint += '/basketball/nba'; break;
         default: break;
     }
     return endpoint;
@@ -66,18 +68,17 @@ function getGamesForSport(sport, onLoad, onError) {
     if (DEBUG_MOCK) return mock.nfl;
     var req = new XMLHttpRequest();
     const endpoint = getEndpointForSport(sport) + "/scoreboard"
+    console.log("getting games from endpoint = ", endpoint);
     req.open('GET', endpoint);
     req.onload = function (e) {
-        if (req.readyState == 4) {
-            // 200 - HTTP OK
-            if (req.status == 200) {
-                const sportsData = JSON.parse(req.responseText);
-                const events = sportsData.events;
-                const games = events.map(event => parseEvent(sport, event));
-                console.log("games = ", JSON.stringify(games));
-                onLoad(games);
-                return;
-            }
+        if (req.readyState == 4 && req.status == 200) {
+            const sportsData = JSON.parse(req.responseText);
+            console.log("parsed sportsData")
+            const events = sportsData.events;
+            // console.log("raw games = ", JSON.stringify(events, null, 2));
+            const games = events.map(event => parseEvent(sport, event));
+            onLoad(games);
+            return;
         }
         // doesn't run if onLoad is called due to the return statement
         onError();
@@ -175,16 +176,16 @@ function parseEvent(sport, event) {
 function gameDetails(sport, situation) {
     if(situation == undefined || situation == null) return "";
     switch (sport) {
-        case sports.NFL: return situation.downDistanceText || "";
-        case sports.MLB: return situation.balls + "-" + situation.strikes + ", " + situation.outs + " outs"; 
+        case models.sports.NFL: return situation.downDistanceText || "";
+        case models.sports.MLB: return situation.balls + "-" + situation.strikes + ", " + situation.outs + " outs"; 
         default: return "";
     }
 }
 
 function gamePossession(sport, situation, team1, team2) {
     switch (sport) {
-        case sports.NFL: return possessionByTeam(situation.possession, team1, team2);
-        case sports.MLB: return situation.batter == undefined ? possessionByTeam(situation.dueUp[0].athlete.team.id, team1, team2) : possessionByTeam(situation.batter.athlete.team.id, team1, team2);
+        case models.sports.NFL: return possessionByTeam(situation.possession, team1, team2);
+        case models.sports.MLB: return situation.batter == undefined ? possessionByTeam(situation.dueUp[0].athlete.team.id, team1, team2) : possessionByTeam(situation.batter.athlete.team.id, team1, team2);
         default: return models.possession.NONE;
     }
 }

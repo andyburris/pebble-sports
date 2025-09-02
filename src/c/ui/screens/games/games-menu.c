@@ -256,7 +256,7 @@ static void initialise_ui(Window *window, Sport sport)
     text_layer_set_text(s_loading_text, "Loading games");
     layer_add_child(window_layer, text_layer_get_layer(s_loading_text));
 
-    GRect error_layer_bounds = GRect(bounds.origin.x + PBL_IF_ROUND_ELSE(32, 16), bounds.origin.y + bounds.size.h / 2 - 36, bounds.size.w - PBL_IF_ROUND_ELSE(64, 32), 61);
+    GRect error_layer_bounds = GRect(bounds.origin.x + PBL_IF_ROUND_ELSE(32, 16), bounds.origin.y + bounds.size.h / 2 - PBL_IF_ROUND_ELSE(24, 36), bounds.size.w - PBL_IF_ROUND_ELSE(64, 32), 61);
     s_error_layer = error_layer_create(error_layer_bounds);
     layer_set_hidden(s_error_layer, true);
     layer_add_child(window_layer, s_error_layer);

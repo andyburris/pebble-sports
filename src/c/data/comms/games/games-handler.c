@@ -148,7 +148,7 @@ static void clear_game(Game *game) {
 
 void handle_clear_games() {
     current_request = -1;
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "clearing current games");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "clearing %d current games", games_count);
     for (int i = 0; i < games_count; i++)
     {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "freeing game %i", i);
@@ -158,7 +158,7 @@ void handle_clear_games() {
         clear_game(game);
     } 
     
-    //free(games);
+    free(games);
     games = NULL;
     on_games_success = NULL;
     on_games_error = NULL;
@@ -254,7 +254,7 @@ void handle_games_recieved(DictionaryIterator *iter) {
         return;
     }
 
-    games = realloc(games, (games_count + 1) * sizeof(Game));
+    games = realloc(games, (games_count + 1) * sizeof(Game*));
     games[games_count] = malloc(sizeof(Game));
 
     game_set(games[games_count], iter);
